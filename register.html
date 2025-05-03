@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+    <head> 
+        <title>Register</title>
+        <!-- <link rel="stylesheet" href="style.css"> -->
+        <!-- <script src="login.js"></script> -->
+    </head>
+<body>
+
+    <div class="box" align="center">
+        <h1>Register</h1>
+
+        <form id="register-form" action = "register.php" method="post">
+
+            <div class = "name" align="center">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class = "surname" align="center">
+                <label for="surname">Surname:</label>
+                <input type="text" id="surname" required>
+            </div>
+
+            <div class = "username" align="center">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+            </div>  
+
+            <div class = "email" align="center">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class = "phoneNumber" align="center">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" required>
+            </div>
+
+            <div class = "password">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <div class = "confirm-password">
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" required>
+            </div>
+
+            <div class = "buttons">
+                <button type="button" onclick = "window.location.href = home.php" >Cancel</button>
+                <!-- Check register is unique -->
+                <button type="button" onclick = "window.location.href = login.php" >Register</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>
