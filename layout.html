@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            PA1 - WishList Page
+        </title>
+        <script src="wishlist_js.js" defer></script>
+    <style>
+        @font-face {
+            font-family: 'Porkys';
+            src:url('FONT/CalSans-Regular.ttf');
+        }
+        @font-face {
+            font-family: 'Aileron';
+            src: url('FONT/Aileron-Regular.otf');
+        }
+        .navbar {
+            background-color: rgb(17, 61, 42);
+            overflow: hidden;
+            padding: 10px 10px;
+            border-radius: 15px;
+            justify-content: space-between;
+            display: flex;
+            
+        }
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            display: inline-block;
+            font-family: "Porkys", sans-serif;
+            font-size: 25px;
+        }
+        .nav-right a:hover {
+            background-color: #507541;
+            border-radius: 15px;
+            
+        }
+        
+        body{
+            background-color: #f0dcbd;
+        }
+
+        .text{
+            color: white;
+            font-size: 45px;
+            align-content: center;
+            font-family: "Porkys", sans-serif; 
+        }
+
+        .wishlist-container {
+            display: flex; /* Enables flexbox */
+            justify-content: space-around; /* Distributes products evenly */
+            padding: 20px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            
+        }
+
+        .product{
+            
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-right: 0;
+            border: 2px solid #113d2a;
+            border-radius: 15px;
+        }
+        .product img{
+            width: 350px;
+            height: 400px;
+            border-radius: 15px;
+            max-width: 100%;
+        }
+
+        h2{
+            color: #113d2a;
+            font-family: "Porkys", sans-serif;
+            font-size: 20px;
+            font-weight: lighter;
+            width: 350px;
+        }
+        p{
+            color: #28805a;
+            font-family: "Porkys", sans-serif;
+            font-size: 15px;
+            font-weight: lighter;
+            margin-bottom: 10px;
+        }
+
+        .button{
+            width: 350px;
+            height: 40px;
+            margin-inline: 5px;
+            background-color: #f0dcbd;
+            font-family: 'Porkys', sans-serif;
+            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            color: black;
+            margin-bottom: 10px;
+        }
+        .button:hover{
+            background-color: #5bb890;
+            transform: scale(1.1);
+        }
+    </style>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <div class = "text">
+                WishList
+            </div>
+            <div class = "nav-right">
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/deals.html">Best Deals</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/index.html">Products</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/cart.html">Cart</a>
+            </div>
+        </div>
+
+        <div class="wishlist-container">
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src="img/Crotchet Vest.jpg" alt = "loading image" href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                </a>
+                <h2>Crochet Vest</h2>
+                <p>Blue and white crotchet vest<br> R200 </p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+            </div>
+            
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src="img/Beanies Cat Beanie Y2k Beanie Goth Knit Hat Grunge Crochet Hats for Women y2k Accessories.jpg" alt = "loading" >
+                </a>
+                
+                <h2>Cat Beanie: Goth Knit Hat</h2>
+                <p>Cute customizable cat beanie <br> R300</p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+
+            </div>
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src = "img/Cute green and white sweater.jpg" alt = "loading">
+                </a>
+                <h2>Crotchet sweater</h2>
+                <p>Cute Green and white crotchet sweater <br> R250</p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+            </div>
+        </div>
+    </body>
+</html>
