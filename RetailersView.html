@@ -4,8 +4,17 @@
   <meta charset="UTF-8">
   <title>Products</title>
   <style>
+    @font-face {
+        font-family: 'Porkys';
+        src:url('FONT/CalSans-Regular.ttf');
+    }
+    @font-face {
+        font-family: 'Aileron';
+        src: url('FONT/Aileron-Regular.otf');
+    }
+    
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Aileron', Arial, sans-serif;
       background-color: #f0dcbd;
       margin: 0;
       padding: 0;
@@ -13,23 +22,39 @@
 
     nav {
       background-color: rgb(17, 61, 42);
-      padding: 35px;
+      padding: 10px 10px;
       color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    nav .text {
+      color: white;
+      font-size: 45px;
+      font-family: "Porkys", sans-serif;
     }
 
     nav .nav-links {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      gap: 10px;
     }
 
     nav .nav-links a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      padding: 14px 20px;
+      display: inline-block;
+      font-family: "Porkys", sans-serif;
+      font-size: 25px;
+    }
+
+    nav .nav-links a:hover {
+      background-color: #507541;
+      border-radius: 15px;
     }
 
     .controls {
@@ -41,12 +66,38 @@
     .controls input[type="text"] {
       padding: 0.5rem;
       flex-grow: 1;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls select {
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      padding: 0.5rem;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls button {
+      border-radius: 15px;
+      background-color: #f0dcbd;
+      color: black;
+      border: 2px solid #113d2a;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    .controls button:hover {
+      background-color: #5bb890;
+      transform: scale(1.1);
     }
 
     .product-grid {
       display: flex;
       gap: 30px;
-      justify-content: center;
+      justify-content: space-around;
       margin: 2rem;
       flex-wrap: wrap;
       padding: 20px;
@@ -54,9 +105,9 @@
 
     .product-card {
       border: 2px solid #113d2a;
-      padding: 1rem;
-      width: 200px;
-      flex: 0 0 300px;
+      border-radius: 15px;
+      padding: 10px;
+      width: 350px;
       text-align: center;
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -64,30 +115,54 @@
     }
 
     .product-card img {
-      width: 100%;
-      height: 200px;
+      width: 350px;
+      height: 400px;
       object-fit: cover;
+      margin-bottom: 10px;
+      border-radius: 15px;
+    }
+
+    .product-card h4 {
+      color: #113d2a;
+      font-family: "Porkys", sans-serif;
+      font-size: 20px;
+      font-weight: lighter;
+    }
+    
+    .product-card p {
+      color: #28805a;
+      font-family: "Porkys", sans-serif;
+      font-size: 15px;
+      font-weight: lighter;
       margin-bottom: 10px;
     }
 
     .product-card button {
-      margin: 5px;
+      width: 350px;
+      height: 40px;
+      margin-inline: 5px;
+      margin-bottom: 10px;
       padding: 0.5rem 1rem;
       cursor: pointer;
-      background-color: #113d2a;
-      color: white;
-      border: none;
-      border-radius: 4px;
+      background-color: #f0dcbd;
+      color: black;
+      border: 2px solid #113d2a;
+      border-radius: 15px;
+      font-family: 'Porkys', sans-serif;
+      font-size: 16px;
+      transition: transform 0.2s ease, background-color 0.3s ease;
     }
     
     .product-card button:hover {
-      background-color: #1a5940;
+      background-color: #5bb890;
+      transform: scale(1.1);
     }
     
     .product-actions {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
       gap: 5px;
     }
 
@@ -107,24 +182,43 @@
       background-color: #fefefe;
       margin: auto;
       padding: 20px;
-      border: 1px solid #888;
-      width: 300px;
-      border-radius: 10px;
+      border: 2px solid #113d2a;
+      width: 350px;
+      border-radius: 15px;
     }
 
     .modal-content label {
       display: block;
       margin: 10px 0 5px;
+      font-family: 'Porkys', sans-serif;
+      color: #113d2a;
     }
 
     .modal-content input, .modal-content select {
       width: 100%;
-      padding: 5px;
+      padding: 8px;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      font-family: 'Porkys', sans-serif;
     }
 
     .modal-content button {
-      margin-top: 10px;
       width: 100%;
+      height: 40px;
+      margin-top: 15px;
+      background-color: #f0dcbd;
+      color: black;
+      border: 2px solid #113d2a;
+      border-radius: 15px;
+      font-family: 'Porkys', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    
+    .modal-content button:hover {
+      background-color: #5bb890;
+      transform: scale(1.05);
     }
 
     .add-section {
@@ -133,30 +227,86 @@
       align-items: center;
       padding: 1rem 2rem;
       color: white;
+      background-color: rgb(17, 61, 42);
+      border-radius: 15px;
+      margin: 1rem 2rem 0 2rem;
+    }
+    
+    .add-section h2 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 30px;
+      font-weight: lighter;
+    }
+    
+    .add-section button {
+      padding: 10px 20px;
+      border-radius: 15px;
+      background-color: #f0dcbd;
+      font-family: 'Porkys', sans-serif;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    
+    .add-section button:hover {
+      background-color: #5bb890;
+      transform: scale(1.1);
     }
 
     .review-page {
       background-color: white;
       padding: 1rem;
       margin: 2rem;
-      border-radius: 10px;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+    }
+    
+    .review-page h3, .review-page h4 {
+      color: #113d2a;
+      font-family: "Porkys", sans-serif;
+    }
+    
+    .review-page p, .review-page li {
+      color: #28805a;
+      font-family: "Porkys", sans-serif;
+    }
+    
+    .review-page button {
+      width: auto;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #f0dcbd;
+      border: 2px solid #113d2a;
+      border-radius: 15px;
+      font-family: 'Porkys', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    
+    .review-page button:hover {
+      background-color: #5bb890;
+      transform: scale(1.1);
     }
     
     .image-upload-preview {
       width: 100%;
       height: 150px;
-      border: 1px dashed #ccc;
+      border: 2px dashed #113d2a;
       margin-top: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: #f9f9f9;
       overflow: hidden;
+      border-radius: 15px;
     }
     
     .image-upload-preview img {
       max-width: 100%;
       max-height: 100%;
+      border-radius: 15px;
     }
     
     .file-input-wrapper {
@@ -168,18 +318,24 @@
     
     .file-input-wrapper input[type=file] {
       width: 100%;
+      font-family: 'Porkys', sans-serif;
     }
     
     .tabs {
       display: flex;
       margin-bottom: 10px;
+      overflow: hidden;
+      border-radius: 15px;
     }
     
     .tab {
       padding: 8px 15px;
       cursor: pointer;
-      border: 1px solid #ccc;
-      background-color: #f0f0f0;
+      border: 2px solid #113d2a;
+      background-color: #f0dcbd;
+      font-family: 'Porkys', sans-serif;
+      flex: 1;
+      text-align: center;
     }
     
     .tab.active {
@@ -199,15 +355,16 @@
 <body>
 
   <nav>
+    <div class="text">Welcome Woolworths!</div>
     <div class="nav-links">
-      <a href=RetailersView.html>Products</a>
+      <a href="RetailersView.html">Products</a>
       <a href="#">Requests</a>
       <a href="Reviews.html">Review</a>
     </div>
   </nav>
 
   <div class="add-section">
-    <h2>Product Management</h2>
+    <h2>Available Products</h2>
     <button onclick="document.getElementById('addModal').style.display='block'">Add New Product</button>
   </div>
 
@@ -363,7 +520,7 @@
     </ul>
 
     <h4>Respond to Reviews</h4>
-    <textarea rows="4" style="width:100%;" placeholder="Write your response..."></textarea>
+    <textarea rows="4" style="width:100%; border-radius: 15px; border: 2px solid #113d2a; padding: 10px; font-family: 'Porkys', sans-serif;" placeholder="Write your response..."></textarea>
     <button style="margin-top:10px;">Submit Response</button>
   </div>
 
