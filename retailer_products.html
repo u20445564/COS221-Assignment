@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Products
+        </title>
+        <script src="wishlist_js.js" defer></script>
+    <style>
+        @font-face {
+            font-family: 'Porkys';
+            src:url('FONT/CalSans-Regular.ttf');
+        }
+        @font-face {
+            font-family: 'Aileron';
+            src: url('FONT/Aileron-Regular.otf');
+        }
+        .navbar {
+            background-color: rgb(17, 61, 42);
+            overflow: hidden;
+            padding: 10px 10px;
+            border-radius: 15px;
+            justify-content: space-between;
+            display: flex;
+            
+        }
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            display: inline-block;
+            font-family: "Porkys", sans-serif;
+            font-size: 25px;
+        }
+        .nav-right a:hover {
+            background-color: #507541;
+            border-radius: 15px;
+            
+        }
+        
+        body{
+            background-color: #f0dcbd;
+        }
+
+        .text{
+            color: white;
+            font-size: 45px;
+            align-content: center;
+            font-family: "Porkys", sans-serif; 
+        }
+
+        .wishlist-container {
+            display: flex; /* Enables flexbox */
+            justify-content: space-around; /* Distributes products evenly */
+            padding: 5px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: space-between; /* This will push the add button to the right */
+            align-items: center; /* Vertically center all items */
+            margin: 20px auto;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px; /* Adds padding inside the input */
+            border: 2px solid #ccc; /* Light gray border */
+            border-radius: 5px; /* Rounded corners */
+            width: 250px;
+        }
+
+        #search{
+            width: 100px;
+            height: 40px;
+            margin-inline: 5px;
+            background-color: #f0dcbd;
+            font-family: 'TanTankiwood', sans-serif;
+            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 14px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            color:#2a4aa1;
+            border-color: gray;
+            
+        }
+
+        #clear-search-button{
+            width: 110px;
+            height: 35px;
+            margin-inline: 5px;
+            background-color: #f0dcbd;
+            font-family: 'TanTankiwood', sans-serif;
+            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 14px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            color:#2a4aa1;
+            margin-bottom: 10px;
+        }
+
+        #clear-search-button:hover{
+            background-color: #e4c0a1;
+            transform: scale(1.1);
+        }
+
+        #search:hover{
+            background-color: #e4c0a1;
+            transform: scale(1.1);
+        }
+
+        .sort-container label{ 
+            font-weight: lighter;
+            color: #2a4aa1;
+            font-family: 'Porkys',sans-serif;
+            margin-left: 5px;
+        } 
+
+
+        .sort-container select{
+            
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Porkys';
+            font-weight:normal;
+            font-size: 16px;
+            height: 40px;
+            width: 170px;
+        }  
+
+        .product{
+            
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-right: 0;
+            border: 2px solid #113d2a;
+            border-radius: 15px;
+        }
+
+        .product img{
+            width: 350px;
+            height: 350px;
+            border-radius: 15px;
+            max-width: 100%;
+        }
+
+        h2{
+            color: #113d2a;
+            font-family: "Porkys", sans-serif;
+            font-size: 20px;
+            font-weight: lighter;
+            width: 350px;
+        }
+        p{
+            color: #28805a;
+            font-family: "Porkys", sans-serif;
+            font-size: 15px;
+            font-weight: lighter;
+            margin-bottom: 10px;
+        }
+
+        .button{
+            width: 350px;
+            height: 40px;
+            margin-inline: 5px;
+            background-color: #f0dcbd;
+            font-family: 'Porkys', sans-serif;
+            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            color: black;
+            margin-bottom: 10px;
+        }
+        .button:hover{
+            background-color: #5bb890;
+            transform: scale(1.1);
+        }
+
+        .search-group {
+            display: flex;
+            justify-content: center; /* Centers the search and sort elements */
+            align-items: center; /* Vertically aligns them */
+            gap: 20px; /* Space between elements */
+            flex-grow: 1; /* Takes up available space */
+            flex-wrap: nowrap; /* Prevent wrapping */
+            margin: 0 auto; /* Center the group */
+        }
+
+
+        .add{
+            width: 120px;
+            height: 40px;
+            margin-inline: 5px;
+            background-color: #da754d;
+            font-family: 'Porkys', sans-serif;
+            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            color: black;
+            margin-bottom: 10px;
+            margin-left: auto;
+        }
+        
+        .add:hover{
+            transform: scale(1.1);
+        }
+
+        
+    </style>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <div class = "text">
+                Products
+            </div>
+            <div class = "nav-right">
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/deals.html">Best Deals</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/index.html">Products</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/cart.html">Cart</a>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="search-group">
+                <div class="search-bar">
+                    <input type="text" id="searching" placeholder="Search..." name="search">
+                    <button type="submit" id="search">Search</button>
+                    <button id="clear-search-button">Clear Search</button>
+                </div>
+        
+                <div class="sort-container">
+                    <label for="sort-by">Sort by:</label>
+                    <select id="sort-by">
+                        <option value="newest">Newest Arrivals</option>
+                        <option value="price">Price</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="button" class="add">Add product!</button>
+        </div>
+
+       
+
+        <div class="wishlist-container">
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src="img/Crotchet Vest.jpg" alt = "loading image" href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                </a>
+                <h2>Crochet Vest</h2>
+                <p>Blue and white crotchet vest<br> R200 </p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+            </div>
+            
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src="img/Beanies Cat Beanie Y2k Beanie Goth Knit Hat Grunge Crochet Hats for Women y2k Accessories.jpg" alt = "loading" >
+                </a>
+                
+                <h2>Cat Beanie: Goth Knit Hat</h2>
+                <p>Cute customizable cat beanie <br> R300</p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+
+            </div>
+            <div class="product">
+                <a href ="https://wheatley.cs.up.ac.za/u24827313/COS216/PA1/view.html">
+                    <img src = "img/Cute green and white sweater.jpg" alt = "loading">
+                </a>
+                <h2>Crotchet sweater</h2>
+                <p>Cute Green and white crotchet sweater <br> R250</p>
+                <button type="button" class="button">Add To Cart!</button><br>
+                <button type="button" class="button">Add To WishList!</button>
+            </div>
+        </div>
+    </body>
+</html>
