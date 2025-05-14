@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Compare It! - Product Comparison</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0dcbd;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: rgb(17, 61, 42);
+      padding: 10px 10px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    nav .text {
+      color: white;
+      font-size: 45px;
+      font-weight: bold;
+    }
+
+    nav .nav-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    nav .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-weight: bold;
+      font-size: 25px;
+    }
+    
+    .search-bar {
+      margin: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-bar input {
+      flex-grow: 1;
+      padding: 10px;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+    }
+    
+    .search-bar select {
+      padding: 10px;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+    }
+    
+    .search-bar button {
+      padding: 10px 20px;
+      border-radius: 15px;
+      background-color: #f0dcbd;
+      border: 2px solid #113d2a;
+      cursor: pointer;
+    }
+
+    .header-section {
+      background-color: rgb(17, 61, 42);
+      color: white;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 15px;
+    }
+    
+    .header-section h2 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 20px;
+    }
+
+    .product-card {
+      width: 300px;
+      background-color: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border: 2px solid #113d2a;
+    }
+
+    .product-card img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .product-card h3 {
+      text-align: center;
+      color: #113d2a;
+      margin: 10px 0;
+    }
+
+    .product-card p {
+      color: #666;
+      margin: 10px 0;
+    }
+
+    .price-list {
+      margin: 15px 0;
+    }
+
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .rating {
+      color: #ffcc00;
+      text-align: center;
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    .add-to-cart {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .add-review {
+      width: 100%;
+      padding: 10px;
+      background-color: #29805a;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .review-input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #113d2a;
+      display: none;
+    }
+    
+    .filters-section {
+      background-color: white;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      margin: 0 20px 20px 20px;
+      padding: 20px;
+      display: none;
+    }
+    
+    .filters-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-group h3 {
+      color: #113d2a;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .filter-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .filter-option input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    
+    .filter-option label {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="text">Compare It!</div>
+    <div class="nav-links">
+      <a href="#">Products</a>
+      <a href="#">Requests</a>
+      <a href="#">Review</a>
+    </div>
+  </nav>
+
+  <div class="header-section">
+    <h2>Product Comparison</h2>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search products...">
+    <select id="sortSelect">
+      <option value="">Sort By</option>
+      <option value="priceLowHigh">Price: Low to High</option>
+      <option value="priceHighLow">Price: High to Low</option>
+      <option value="name">Name</option>
+      <option value="rating">Rating</option>
+    </select>
+    <button id="toggleFilters">Show Filters</button>
+    <button id="searchButton">Search</button>
+  </div>
+
+  <div class="filters-section" id="filtersSection">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <h3>Retailers</h3>
+        <div class="filter-option">
+          <input type="checkbox" id="storeWoolworths" checked>
+          <label for="storeWoolworths">Woolworths</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="storeCheckers" checked>
+          <label for="storeCheckers">Checkers</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="storePicknPay" checked>
+          <label for="storePicknPay">Pick n Pay</label>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <h3>Categories</h3>
+        <div class="filter-option">
+          <input type="checkbox" id="categoryDairy" checked>
+          <label for="categoryDairy">Tinned stuff</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="categoryBakery" checked>
+          <label for="categoryBakery">Toiletries</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="categorySnacks" checked>
+          <label for="categorySnacks">Cleaning</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="categoryElectronics" checked>
+          <label for="categoryElectronics">Beverages</label>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <h3>Brand</h3>
+        <div class="filter-option">
+          <input type="checkbox" id="brandWoolworths" checked>
+          <label for="brandWoolworths">Woolworths</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="brandApple" checked>
+          <label for="brandApple">Apple</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="brandSamsung" checked>
+          <label for="brandSamsung">Samsung</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="brandNestle" checked>
+          <label for="brandNestle">Nestle</label>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <h3>Price Range</h3>
+        <div class="filter-option">
+          <input type="checkbox" id="price0-100" checked>
+          <label for="price0-100">R0 - R100</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="price100-500" checked>
+          <label for="price100-500">R100 - R500</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="price500plus" checked>
+          <label for="price500plus">R500+</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-container">
+    <!-- Koo beans -->
+    <div class="product-card">
+      <img src="./images/beans.png" alt="Koo Beans">
+      <h3>Koo Beans</h3>
+      <p>Koo Baked Beans in Tomato Sauce 400 g</p>
+      <div class="price-list">
+        <div class="price-item">
+          <span>Woolworths</span>
+          <span>R19.99</span>
+        </div>
+        <div class="price-item">
+          <span>Checkers</span>
+          <span>R18.99</span>
+        </div>
+        <div class="price-item">
+          <span>PicknPay</span>
+          <span>R16.99</span>
+        </div>
+      </div>
+      <div class="rating">★★★★☆</div>
+      <button class="add-to-cart">Add to Cart</button>
+      <button class="add-review" onclick="toggleReview(this)">Add a review...</button>
+      <input type="text" class="review-input" placeholder="Write your review here...">
+    </div>
+
+    <!-- Two Ply Toilet Paper -->
+    <div class="product-card">
+      <img src="./images/tissue.png" alt="Two Ply Toilet Paper">
+      <h3>Two Ply Toilet Paper</h3>
+      <p>Baby Soft Fresh White Two Ply Toilet Paper 18 pk</p>
+      <div class="price-list">
+        <div class="price-item">
+          <span>Woolworths</span>
+          <span>R169.99</span>
+        </div>
+        <div class="price-item">
+          <span>Checkers</span>
+          <span>R169.99</span>
+        </div>
+        <div class="price-item">
+          <span>PicknPay</span>
+          <span>R169.99</span>
+        </div>
+      </div>
+      <div class="rating">★★★★★</div>
+      <button class="add-to-cart">Add to Cart</button>
+      <button class="add-review" onclick="toggleReview(this)">Add a review...</button>
+      <input type="text" class="review-input" placeholder="Write your review here...">
+    </div>
+
+    <!-- Coca Cola -->
+    <div class="product-card">
+      <img src="./images/coke.png" alt="Coca-Cola">
+      <h3>Coca-Cola</h3>
+      <p>Coca-Cola Original Soft Drink 2 L</p>
+      <div class="price-list">
+        <div class="price-item">
+          <span>Woolworths</span>
+          <span>R27.99</span>
+        </div>
+        <div class="price-item">
+          <span>Checkers</span>
+          <span>R27.99</span>
+        </div>
+        <div class="price-item">
+          <span>PicknPay</span>
+          <span>R26.99</span>
+        </div>
+      </div>
+      <div class="rating">★★★★☆</div>
+      <button class="add-to-cart">Add to Cart</button>
+      <button class="add-review" onclick="toggleReview(this)">Add a review...</button>
+      <input type="text" class="review-input" placeholder="Write your review here...">
+    </div>
+
+    <!-- Doom -->
+    <div class="product-card">
+      <img src="./images/doom.png" alt="Doom">
+      <h3>Doom</h3>
+      <p>Doom Super Multi Insect Spray 300 ml</p>
+      <div class="price-list">
+        <div class="price-item">
+          <span>Woolworths</span>
+          <span>R47.99</span>
+        </div>
+        <div class="price-item">
+          <span>Checkers</span>
+          <span>R49.99</span>
+        </div>
+        <div class="price-item">
+          <span>PicknPay</span>
+          <span>R49.99</span>
+        </div>
+      </div>
+      <div class="rating">★★★★★</div>
+      <button class="add-to-cart">Add to Cart</button>
+      <button class="add-review" onclick="toggleReview(this)">Add a review...</button>
+      <input type="text" class="review-input" placeholder="Write your review here...">
+    </div>
+  </div>
+
+  <script>
+    function toggleReview(button) {
+      const input = button.nextElementSibling;
+      
+      if (input.style.display === 'none' || input.style.display === '') {
+        input.style.display = 'block';
+        button.textContent = 'Submit Review';
+      } else {
+        if (input.value.trim()) {
+          alert('Review submitted!');
+          input.value = '';
+        }
+        input.style.display = 'none';
+        button.textContent = 'Add a review...';
+      }
+    }
+    
+    // Filter toggle functionality
+    document.getElementById('toggleFilters').addEventListener('click', function() {
+      const filtersSection = document.getElementById('filtersSection');
+      if (filtersSection.style.display === 'none' || filtersSection.style.display === '') {
+        filtersSection.style.display = 'block';
+        this.textContent = 'Hide Filters';
+      } else {
+        filtersSection.style.display = 'none';
+        this.textContent = 'Show Filters';
+      }
+    });
+    
+    // Search functionality
+    document.getElementById('searchButton').addEventListener('click', function() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const sortOption = document.getElementById('sortSelect').value;
+      
+      // Get all products
+      const products = document.querySelectorAll('.product-card');
+      
+      if (searchInput) {
+        // Simple filtering by product name
+        products.forEach(product => {
+          const productName = product.querySelector('h3').textContent.toLowerCase();
+          const productDesc = product.querySelector('p').textContent.toLowerCase();
+          
+          if (productName.includes(searchInput) || productDesc.includes(searchInput)) {
+            product.style.display = 'block';
+          } else {
+            product.style.display = 'none';
+          }
+        });
+        
+        alert('Search completed!');
+      } else {
+        // Show all products if search is empty
+        products.forEach(product => {
+          product.style.display = 'block';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
