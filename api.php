@@ -110,6 +110,9 @@ class API
             case 'AllowUpdateRequest':
                 $this->handleAllowUpdateRequest($data);
                 break;
+            case 'ApproveDeleteRequest':
+                $this->handleApproveDeleteRequest($data);
+                break;
             case 'DeclineRequest':
                 $this->handleDeclineRequest($data);
                 break;
@@ -118,18 +121,6 @@ class API
             case 'GetRetailerRequests':
                 $this->handleGetAllRetailerRequests($data);
                 break;
-            case 'AddRequest':
-                $this->handleAddRequests($data);
-                break;
-
-            case 'UpdateRequest':
-                $this->handleUpdateRequest($data);
-                break;
-
-            case 'DeleteRequest':
-                $this->handleDeleteRequest($data);
-                break;
-
             default:
                 respondError("Unsupported request type", 400);
         }
@@ -329,14 +320,25 @@ class API
     private function handleAddProduct($data)
     {
         $requiredFields = ['product_name', 'description', 'brand', 'category', 'price', 'image_url', 'retailer_id'];
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) || $data[$field] === "") {
+        foreach ($requiredFields as $field) 
+        {
+            if (!isset($data[$field]) || $data[$field] === "") 
+            {
                 respondError("Missing field: $field", 400);
             }
         }
 
+        $payload = json_encode([
+            'name' => $data['product_name'],
+            'description' => $data['description'],
+            'brand' => $data['brand'],
+            'category' => $data['category'],
+            'price' => $data['price'],
+            'image_url' => $data['image_url']
+        ]);
+
         $stmt = $this->conn->prepare("
-            INSERT INTO products (product_name, description, brand, category, price, image_url, retailer_id)
+            INSERT INTO requests (product_name, description, brand, category, price, image_url, retailer_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
 
@@ -360,45 +362,36 @@ class API
     //Update Product
     private function handleUpdateProduct($data)
     {
-        if (!isset($data['product_id'], $data['retailer_id'])) 
-        {
-            respondError("Missing product_id or retailer_id", 400);
-        }
-
-        $fields = ['product_name', 'description', 'brand', 'category', 'price', 'image_url'];
-        $updates = [];
-        $params = [];
-
-        foreach ($fields as $field) 
-        {
-            if (isset($data[$field])) 
-            {
-                $updates[] = "$field = ?";
-                $params[] = $data[$field];
+        $requiredFields = ['product_id', 'retailer_id'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                respondError("Missing field: $field", 400);
             }
         }
 
-        if (empty($updates)) 
-        {
+        $payload = [
+            'product_id' => $data['product_id']
+        ];
+
+        foreach (['product_name', 'description', 'brand', 'category', 'price', 'image_url'] as $field) {
+            if (isset($data[$field])) {
+                $payload[$field] = $data[$field];
+            }
+        }
+
+        if (count($payload) === 1) { // Only has product_id
             respondError("No fields to update", 400);
         }
 
-        // Ownership check
-        $params[] = $data['product_id'];
-        $params[] = $data['retailer_id'];
-
-        $sql = "UPDATE products SET " . implode(", ", $updates) . " WHERE product_id = ? AND retailer_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute($params);
-
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError("Product not found or you don't have permission to update it", 404);
-        }
+        $stmt = $this->conn->prepare("
+            INSERT INTO requests (retailer_id, type, payload, status, created_at)
+            VALUES (?, 'update', ?, 'pending', NOW())
+        ");
+        $stmt->execute([$data['retailer_id'], json_encode($payload)]);
 
         respondJSON([
             "status" => "success",
-            "message" => "Product updated successfully"
+            "message" => "Update product request submitted to admin"
         ]);
     }
 
@@ -409,16 +402,17 @@ class API
             respondError("Missing product_id or retailer_id", 400);
         }
 
-        $stmt = $this->conn->prepare("DELETE FROM products WHERE product_id = ? AND retailer_id = ?");
-        $stmt->execute([$data['product_id'], $data['retailer_id']]);
+        $payload = json_encode(['product_id' => $data['product_id']]);
 
-        if ($stmt->rowCount() === 0) {
-            respondError("Product not found or you don't have permission to delete it", 404);
-        }
+        $stmt = $this->conn->prepare("
+            INSERT INTO requests (retailer_id, type, payload, status, created_at)
+            VALUES (?, 'delete', ?, 'pending', NOW())
+        ");
+        $stmt->execute([$data['retailer_id'], $payload]);
 
         respondJSON([
             "status" => "success",
-            "message" => "Product deleted successfully"
+            "message" => "Delete product request submitted to admin"
         ]);
     }
 
@@ -701,7 +695,6 @@ class API
             respondError("Missing 'request_id'", 400);
         }
 
-        // Fetch the request
         $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ? AND type = 'add'");
         $stmt->execute([$data['request_id']]);
         $request = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -712,12 +705,15 @@ class API
         }
 
         $payload = json_decode($request['payload'], true);
-        if (!$payload) 
+        $requiredFields = ['name', 'description', 'price', 'category', 'image_url'];
+        foreach ($requiredFields as $field) 
         {
-            respondError("Invalid payload data", 500);
+            if (!isset($payload[$field])) 
+            {
+                respondError("Missing field in payload: $field", 400);
+            }
         }
 
-        // Insert into products table
         $insert = $this->conn->prepare("
             INSERT INTO products (name, description, price, category, retailer_id, image_url, created_at)
             VALUES (?, ?, ?, ?, ?, ?, NOW())
@@ -732,9 +728,8 @@ class API
             $payload['image_url']
         ]);
 
-        // Update request status
-        $update = $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?");
-        $update->execute([$data['request_id']]);
+        $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?")
+            ->execute([$data['request_id']]);
 
         respondJSON([
             "status" => "success",
@@ -760,9 +755,13 @@ class API
         }
 
         $payload = json_decode($request['payload'], true);
-        if (!isset($payload['product_id'])) 
+        $requiredFields = ['product_id', 'name', 'description', 'price', 'category', 'image_url'];
+        foreach ($requiredFields as $field) 
         {
-            respondError("Payload must include 'product_id'", 400);
+            if (!isset($payload[$field])) 
+            {
+                respondError("Missing field in payload: $field", 400);
+            }
         }
 
         $updateProduct = $this->conn->prepare("
@@ -795,7 +794,51 @@ class API
         ]);
     }
 
-    //Delete (Decline) requests 
+
+    //Delete Products 
+    private function handleApproveDeleteRequest($data)
+    {
+        if (!isset($data['request_id'])) 
+        {
+            respondError("Missing 'request_id'", 400);
+        }
+
+        // Fetch the delete request
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ? AND type = 'delete'");
+        $stmt->execute([$data['request_id']]);
+        $request = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$request) 
+        {
+            respondError("Delete request not found", 404);
+        }
+
+        $payload = json_decode($request['payload'], true);
+        if (!isset($payload['product_id'])) 
+        {
+            respondError("Payload must include 'product_id'", 400);
+        }
+
+        // Attempt to delete the product
+        $delete = $this->conn->prepare("DELETE FROM products WHERE product_id = ? AND retailer_id = ?");
+        $delete->execute([$payload['product_id'], $request['retailer_id']]);
+
+        if ($delete->rowCount() === 0) 
+        {
+            respondError("Product not found or you don't have permission to delete it", 404);
+        }
+
+        // Update request status to approved
+        $update = $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?");
+        $update->execute([$data['request_id']]);
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Delete request approved and product deleted"
+        ]);
+    }
+
+    //(Decline) requests 
     private function handleDeclineRequest($data)
     {
         if (!isset($data['request_id'])) 
@@ -803,33 +846,53 @@ class API
             respondError("Missing 'request_id'", 400);
         }
 
+        // Check that the request exists
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ?");
+        $stmt->execute([$data['request_id']]);
+        $request = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$request) 
+        {
+            respondError("Request not found", 404);
+        }
+
+        // Update request status to declined
         $stmt = $this->conn->prepare("UPDATE requests SET status = 'declined', updated_at = NOW() WHERE request_id = ?");
         $stmt->execute([$data['request_id']]);
 
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError("Request not found or already declined", 404);
-        }
-
         respondJSON([
             "status" => "success",
-            "message" => "Request declined"
+            "message" => "Request declined successfully"
         ]);
     }
 
     //Retailer
     private function handleGetAllRetailerRequests($data)
     {
-        $stmt = $this->conn->prepare("SELECT * FROM requests");
-        $stmt->execute();
-        $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $filter = isset($data['filter']) ? strtolower($data['filter']) : null;
+        $requests = [];
+
+        if ($filter === 'pending')
+        {
+            $requests = $this->pendingRequestsFilter($data);
+        } 
+        else if ($filter === 'approved') 
+        {
+            $requests = $this->approvedRequestsFilter($data);
+        } 
+        else 
+        {
+            // No filter or unknown filter — return all
+            $stmt = $this->conn->prepare("SELECT * FROM requests");
+            $stmt->execute();
+            $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
         if (!$requests) 
         {
             respondError("No requests found", 404);
         }
 
-        //JSON Success Response
         respondJSON([
             "status" => "success",
             "timestamp" => round(microtime(true) * 1000),
@@ -837,6 +900,19 @@ class API
         ]);
     }
 
+    private function pendingRequestsFilter($data)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE status = 'pending'");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function approvedRequestsFilter($data)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE status = 'approved'");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 
  function respondJSON($arr, $code = 200) 
