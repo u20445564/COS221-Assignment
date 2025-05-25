@@ -59,40 +59,27 @@ class API
                 break;
 
             // REVIEWS 
-            //Admin
             case 'GetAllReviewsAndResponses':
                 $this->handleGetAllReviewsAndResponses($data);
                 break;
-            case 'DeleteReviewOrResponse': 
-                $this->handleDeleteReviewOrResponse($data);
-                break;
-
-            //Customer 
             case 'AddReview':
                 $this->handleAddReview($data);
                 break;
             case 'UpdateReview':
                 $this->handleUpdateReview($data);
-                break;
-            //case 'DeleteReview': -> may be redundant 
+                break; 
             case 'DeleteReview':
                 $this->handleDeleteReview($data);
                 break;
-
-            //Retailer 
-            case 'GetRetailerResponse':
-                $this->handleGetRetailerResponses($data);
+            case 'ResponseToReview':
+                $this->handleRespondToReview($data);
                 break;
-            case 'AddResponse':
-                $this->handleAddResponse($data);
-                break;
-            case 'UpdateResponse':
-                $this->handleUpdateResponse($data);
-                break;
-            //Again may be redundant
             case 'DeleteResponse':
-                $this->handleDeleteResponse($data);
+                $this->handleDeleteRetailerResponse($data);
                 break; 
+            case 'ProductReview':
+                $this->handleGetProductReviews($data);
+                break;
 
             //REQUESTS
             //Admin
@@ -126,6 +113,14 @@ class API
                 break;
             case 'DeleteProduct':
                 $this->handleDeleteProductRequest($data);
+                break;
+
+            //CRUD Operations for Requests
+            case 'EditReqiest':
+                $this->handleEditRequest($data);
+                break;
+            case 'DeleteRequest':
+                $this->handleDeleteRequest($data);
                 break;
             
             default:
@@ -534,107 +529,6 @@ class API
         ]);
     }
 
-    // CRUD OPERATIONS
-    //Add Product Request
-    private function handleAddProductRequest($data)
-    {
-        $requiredFields = ['product_name', 'description', 'brand', 'category', 'price', 'image_url', 'retailer_id'];
-        foreach ($requiredFields as $field) 
-        {
-            if (!isset($data[$field]) || $data[$field] === "") 
-            {
-                respondError("Missing field: $field", 400);
-            }
-        }
-
-        $payload = json_encode([
-            'name' => $data['product_name'],
-            'description' => $data['description'],
-            'brand' => $data['brand'],
-            'category' => $data['category'],
-            'price' => $data['price'],
-            'image_url' => $data['image_url']
-        ]);
-
-        $stmt = $this->conn->prepare("
-            INSERT INTO requests (product_name, description, brand, category, price, image_url, retailer_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
-
-        $stmt->execute([
-            $data['product_name'],
-            $data['description'],
-            $data['brand'],
-            $data['category'],
-            $data['price'],
-            $data['image_url'],
-            $data['retailer_id']
-        ]);
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Product added successfully",
-            "product_id" => $this->conn->lastInsertId()
-        ]);
-    }
-
-    //Update Product
-    private function handleUpdateProductRequest($data)
-    {
-        $requiredFields = ['product_id', 'retailer_id'];
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
-                respondError("Missing field: $field", 400);
-            }
-        }
-
-        $payload = [
-            'product_id' => $data['product_id']
-        ];
-
-        foreach (['product_name', 'description', 'brand', 'category', 'price', 'image_url'] as $field) {
-            if (isset($data[$field])) {
-                $payload[$field] = $data[$field];
-            }
-        }
-
-        if (count($payload) === 1) { // Only has product_id
-            respondError("No fields to update", 400);
-        }
-
-        $stmt = $this->conn->prepare("
-            INSERT INTO requests (retailer_id, type, payload, status, created_at)
-            VALUES (?, 'update', ?, 'pending', NOW())
-        ");
-        $stmt->execute([$data['retailer_id'], json_encode($payload)]);
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Update product request submitted to admin"
-        ]);
-    }
-
-    //Delete Product 
-    private function handleDeleteProductRequest($data)
-    {
-        if (!isset($data['product_id'], $data['retailer_id'])) {
-            respondError("Missing product_id or retailer_id", 400);
-        }
-
-        $payload = json_encode(['product_id' => $data['product_id']]);
-
-        $stmt = $this->conn->prepare("
-            INSERT INTO requests (retailer_id, type, payload, status, created_at)
-            VALUES (?, 'delete', ?, 'pending', NOW())
-        ");
-        $stmt->execute([$data['retailer_id'], $payload]);
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Delete product request submitted to admin"
-        ]);
-    }
-
     //======== REVIEWS ========//
     //Get all reviews for admin to see both customer and user reviews 
     private function handleGetAllReviewsAndResponses($data)
@@ -656,54 +550,15 @@ class API
         ]);
     }
 
-    private function handleDeleteReviewOrResponse($data)
-    {
-        if (!isset($data['type'], $data['id'])) 
-        {
-            respondError("Missing 'type' or 'id' field", 400);
-        }
-
-        $type = strtolower($data['type']);
-        $id = intval($data['id']);
-
-        if ($type === 'review') 
-        {
-            $stmt = $this->conn->prepare("DELETE FROM reviews WHERE review_id = ?");
-        } elseif ($type === 'response') 
-        {
-            $stmt = $this->conn->prepare("DELETE FROM responses WHERE response_id = ?");
-        } else 
-        {
-            respondError("Invalid type: must be 'review' or 'response'", 400);
-        }
-
-        $stmt->execute([$id]);
-
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError(ucfirst($type) . " not found", 404);
-        }
-
-        respondJSON([
-            "status" => "success",
-            "message" => ucfirst($type) . " deleted successfully"
-        ]);
-    }
-
-    //CRUD OPERATIONS REVIEWS
-    //CUSTOMER 
-    //Get all customer reviews 
-
     //Add review
     private function handleAddReview($data)
     {
-         if (!isset($data['product_id'], $data['user_id'], $data['rating'], $data['comment'])) 
-         {
+        if (!isset($data['product_id'], $data['user_id'], $data['rating'], $data['comment'])) {
             respondError("Missing required fields", 400);
         }
 
         $stmt = $this->conn->prepare("
-            INSERT INTO reviews (product_id, user_id, rating, comment, created_at)
+            INSERT INTO reviews (product_id, user_id, rating, comment, review_date)
             VALUES (?, ?, ?, ?, NOW())
         ");
 
@@ -714,8 +569,7 @@ class API
             $data['comment']
         ]);
 
-        if (!$success) 
-        {
+        if (!$success) {
             respondError("Failed to add review", 500);
         }
 
@@ -729,9 +583,8 @@ class API
     //Update review
     private function handleUpdateReview($data)
     {
-        if (!isset($data['review_id'], $data['rating'], $data['comment'])) 
-        {
-            respondError("Missing required fields", 400);
+        if (!isset($data['review_id'], $data['rating'], $data['comment'])) {
+            respondError("Missing fields", 400);
         }
 
         $stmt = $this->conn->prepare("
@@ -746,337 +599,359 @@ class API
             $data['review_id']
         ]);
 
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError("Review not found or no changes made", 404);
+        if ($stmt->rowCount() === 0) {
+            respondError("Review not found or not updated", 404);
         }
 
         respondJSON([
             "status" => "success",
-            "message" => "Review updated successfully"
+            "message" => "Review updated"
         ]);
     }
 
-    //Delete review (Again might be redundant)
+    //Delete review (user and admin)
     private function handleDeleteReview($data)
     {
-        if (!isset($data['review_id'])) 
-        {
-            respondError("Missing 'review_id'", 400);
+        if (!isset($data['review_id'])) {
+            respondError("Missing review_id", 400);
         }
 
         $stmt = $this->conn->prepare("DELETE FROM reviews WHERE review_id = ?");
         $stmt->execute([$data['review_id']]);
 
-        if ($stmt->rowCount() === 0) 
-        {
+        if ($stmt->rowCount() === 0) {
             respondError("Review not found", 404);
         }
 
         respondJSON([
             "status" => "success",
-            "message" => "Review deleted successfully"
+            "message" => "Review deleted"
         ]);
     }
-
 
     //RETAILER
-    //Get all retailer reviews responses 
-    private function handleGetRetailerResponses($data)
+    //Add and Update response
+    private function handleRespondToReview($data)
     {
-        if (!isset($data['retailer_id'])) {
-            respondError("Missing 'retailer_id'", 400);
-        }
-
-        $stmt = $this->conn->prepare("SELECT * FROM responses WHERE retailer_id = ?");
-        $stmt->execute([$data['retailer_id']]);
-        $responses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (!$responses) {
-            respondError("No responses found for this retailer", 404);
-        }
-
-        respondJSON([
-            "status" => "success",
-            "timestamp" => round(microtime(true) * 1000),
-            "data" => $responses
-        ]);
-    }
-
-    //Add response
-    private function handleAddResponse($data)
-    {
-        if (!isset($data['review_id'], $data['retailer_id'], $data['response_text'])) {
-            respondError("Missing required fields", 400);
+        if (!isset($data['review_id'], $data['response_text'], $data['retailer_id'])) {
+            respondError("Missing fields", 400);
         }
 
         $stmt = $this->conn->prepare("
-            INSERT INTO responses (review_id, retailer_id, response_text, created_at)
-            VALUES (?, ?, ?, NOW())
-        ");
-
-        $success = $stmt->execute([
-            $data['review_id'],
-            $data['retailer_id'],
-            $data['response_text']
-        ]);
-
-        if (!$success) {
-            respondError("Failed to add response", 500);
-        }
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Response added successfully",
-            "response_id" => $this->conn->lastInsertId()
-        ]);
-    }
-
-    //Update response
-    private function handleUpdateResponse($data)
-    {
-        if (!isset($data['response_id'], $data['response_text'])) 
-        {
-            respondError("Missing required fields", 400);
-        }
-
-        $stmt = $this->conn->prepare("
-            UPDATE responses
-            SET response_text = ?
-            WHERE response_id = ?
+            UPDATE reviews
+            SET response_text = ?, response_date = NOW(), retailer_id = ?
+            WHERE review_id = ?
         ");
 
         $stmt->execute([
             $data['response_text'],
-            $data['response_id']
+            $data['retailer_id'],
+            $data['review_id']
         ]);
 
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError("Response not found or no changes made", 404);
+        if ($stmt->rowCount() === 0) {
+            respondError("Review not found or response not updated", 404);
         }
 
         respondJSON([
             "status" => "success",
-            "message" => "Response updated successfully"
+            "message" => "Response added/updated"
         ]);
     }
 
-    // Also may be redundant
-    private function handleDeleteResponse($data)
+    //Dekete response
+    private function handleDeleteRetailerResponse($data)
     {
-        if (!isset($data['response_id'])) 
-        {
-            respondError("Missing 'response_id'", 400);
+        if (!isset($data['review_id'], $data['retailer_id'])) {
+            respondError("Missing review_id or retailer_id", 400);
         }
 
-        $stmt = $this->conn->prepare("DELETE FROM responses WHERE response_id = ?");
-        $stmt->execute([$data['response_id']]);
+        // Only allow deletion if retailer_id matches the one in review
+        $stmt = $this->conn->prepare("
+            UPDATE reviews
+            SET response_text = NULL, response_date = NULL, retailer_id = NULL
+            WHERE review_id = ? AND retailer_id = ?
+        ");
+        $stmt->execute([
+            $data['review_id'],
+            $data['retailer_id']
+        ]);
 
-        if ($stmt->rowCount() === 0) 
-        {
-            respondError("Response not found", 404);
+        if ($stmt->rowCount() === 0) {
+            respondError("No matching response found or already deleted", 404);
         }
 
         respondJSON([
             "status" => "success",
-            "message" => "Response deleted successfully"
+            "message" => "Retailer response deleted"
+        ]);
+    }
+
+    private function handleGetProductReviews($data)
+    {
+        if (!isset($data['product_id'])) {
+            respondError("Missing product_id", 400);
+        }
+
+        $stmt = $this->conn->prepare("SELECT * FROM reviews WHERE product_id = ?");
+        $stmt->execute([$data['product_id']]);
+        $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$reviews) {
+            respondError("No reviews found for this product", 404);
+        }
+
+        respondJSON([
+            "status" => "success",
+            "data" => $reviews
         ]);
     }
 
     //======== REQUESTS ========//
     //Admin
     //Get all requests
-    private function handleGetAllRequests($data)
+    private function handleGetAllRequests()
     {
-        $stmt = $this->conn->prepare("SELECT * FROM requests");
+        $stmt = $this->conn->prepare("SELECT * FROM requests ORDER BY created_at DESC");
         $stmt->execute();
         $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!$requests) 
-        {
-            respondError("No requests found", 404);
+        // Decode JSON payloads
+        foreach ($requests as &$request) {
+            if (!empty($request['payload'])) {
+                $decoded = json_decode($request['payload'], true);
+                $request['payload'] = is_array($decoded) ? $decoded : null;
+            } else {
+                $request['payload'] = null;
+            }
         }
 
-        //JSON Success Response
         respondJSON([
             "status" => "success",
-            "timestamp" => round(microtime(true) * 1000),
-            "data" => $requests
+            "requests" => $requests
         ]);
     }
 
     //Add (Insert) requests
     private function handleApproveAddRequest($data)
     {
-        if (!isset($data['request_id'])) 
-        {
+        if (!isset($data['request_id'])) {
             respondError("Missing 'request_id'", 400);
         }
 
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ? AND type = 'add'");
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE requestID = ? AND requestCode LIKE 'ADD%' AND status = 'pending'");
         $stmt->execute([$data['request_id']]);
         $request = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$request) 
-        {
+        if (!$request) {
             respondError("Add request not found", 404);
         }
 
         $payload = json_decode($request['payload'], true);
-        $requiredFields = ['name', 'description', 'price', 'category', 'image_url'];
-        foreach ($requiredFields as $field) 
-        {
-            if (!isset($payload[$field])) 
-            {
+
+        $required = ['productID', 'retailerID', 'brandID', 'categoryID', 'product_name', 'description', 'imageURL', 'specifications', 'price'];
+        foreach ($required as $field) {
+            if (empty($payload[$field])) {
                 respondError("Missing field in payload: $field", 400);
             }
         }
 
-        $insert = $this->conn->prepare("
-            INSERT INTO products (name, description, price, category, retailer_id, image_url, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, NOW())
-        ");
+        $this->conn->beginTransaction();
+        try {
+            $this->conn->prepare("
+                INSERT INTO products (productID, product_name, description, imageURL, specifications)
+                VALUES (?, ?, ?, ?, ?)
+            ")->execute([
+                $payload['productID'], $payload['product_name'], $payload['description'],
+                $payload['imageURL'], $payload['specifications']
+            ]);
 
-        $insert->execute([
-            $payload['name'],
-            $payload['description'],
-            $payload['price'],
-            $payload['category'],
-            $request['retailer_id'],
-            $payload['image_url']
-        ]);
+            $this->conn->prepare("
+                INSERT INTO comparisons (retailerID, productID, price)
+                VALUES (?, ?, ?)
+            ")->execute([
+                $payload['retailerID'], $payload['productID'], $payload['price']
+            ]);
 
-        $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?")
-            ->execute([$data['request_id']]);
+            $this->conn->prepare("
+                INSERT INTO productcategory (productID, categoryID)
+                VALUES (?, ?)
+            ")->execute([
+                $payload['productID'], $payload['categoryID']
+            ]);
 
-        respondJSON([
-            "status" => "success",
-            "message" => "Add request approved and product inserted"
-        ]);
+            $this->conn->prepare("
+                INSERT INTO productbrand (productID, brandID)
+                VALUES (?, ?)
+            ")->execute([
+                $payload['productID'], $payload['brandID']
+            ]);
+
+            $this->conn->prepare("
+                UPDATE requests SET status = 'approved', modified_at = NOW()
+                WHERE requestID = ?
+            ")->execute([$data['request_id']]);
+
+            $this->conn->commit();
+
+            respondJSON([
+                "status" => "success",
+                "message" => "Add request approved and product inserted"
+            ]);
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            respondError("Failed to approve add request: " . $e->getMessage(), 500);
+        }
     }
 
     //Update (Accept changes) requests
     private function handleAllowUpdateRequest($data)
     {
-        if (!isset($data['request_id'])) 
-        {
+        if (!isset($data['request_id'])) {
             respondError("Missing 'request_id'", 400);
         }
 
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ? AND type = 'update'");
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE requestID = ? AND requestCode LIKE 'UPD%' AND status = 'pending'");
         $stmt->execute([$data['request_id']]);
         $request = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$request) 
-        {
+        if (!$request) {
             respondError("Update request not found", 404);
         }
 
         $payload = json_decode($request['payload'], true);
-        $requiredFields = ['product_id', 'name', 'description', 'price', 'category', 'image_url'];
-        foreach ($requiredFields as $field) 
-        {
-            if (!isset($payload[$field])) 
-            {
+
+        $required = ['productID', 'retailerID', 'brandID', 'categoryID', 'product_name', 'description', 'imageURL', 'specifications', 'price'];
+        foreach ($required as $field) {
+            if (empty($payload[$field])) {
                 respondError("Missing field in payload: $field", 400);
             }
         }
 
-        $updateProduct = $this->conn->prepare("
-            UPDATE products
-            SET name = ?, description = ?, price = ?, category = ?, image_url = ?
-            WHERE product_id = ? AND retailer_id = ?
-        ");
+        $this->conn->beginTransaction();
+        try {
+            $this->conn->prepare("
+                UPDATE products
+                SET product_name = ?, description = ?, imageURL = ?, specifications = ?
+                WHERE productID = ?
+            ")->execute([
+                $payload['product_name'], $payload['description'], $payload['imageURL'],
+                $payload['specifications'], $payload['productID']
+            ]);
 
-        $updateProduct->execute([
-            $payload['name'],
-            $payload['description'],
-            $payload['price'],
-            $payload['category'],
-            $payload['image_url'],
-            $payload['product_id'],
-            $request['retailer_id']
-        ]);
+            $this->conn->prepare("
+                UPDATE comparisons
+                SET price = ?
+                WHERE productID = ? AND retailerID = ?
+            ")->execute([
+                $payload['price'], $payload['productID'], $payload['retailerID']
+            ]);
 
-        if ($updateProduct->rowCount() === 0) 
-        {
-            respondError("Product update failed or no changes made", 400);
+            $this->conn->prepare("
+                UPDATE productbrand
+                SET brandID = ?
+                WHERE productID = ?
+            ")->execute([
+                $payload['brandID'], $payload['productID']
+            ]);
+
+            $this->conn->prepare("
+                UPDATE productcategory
+                SET categoryID = ?
+                WHERE productID = ?
+            ")->execute([
+                $payload['categoryID'], $payload['productID']
+            ]);
+
+            $this->conn->prepare("
+                UPDATE requests SET status = 'approved', modified_at = NOW()
+                WHERE requestID = ?
+            ")->execute([$data['request_id']]);
+
+            $this->conn->commit();
+
+            respondJSON([
+                "status" => "success",
+                "message" => "Update request approved and product updated"
+            ]);
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            respondError("Failed to approve update request: " . $e->getMessage(), 500);
         }
-
-        $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?")
-            ->execute([$data['request_id']]);
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Update request approved and product updated"
-        ]);
     }
-
 
     //Delete Products 
     private function handleApproveDeleteRequest($data)
     {
-        if (!isset($data['request_id'])) 
-        {
+        if (!isset($data['request_id'])) {
             respondError("Missing 'request_id'", 400);
         }
 
-        // Fetch the delete request
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ? AND type = 'delete'");
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE requestID = ? AND requestCode LIKE 'DEL%' AND status = 'pending'");
         $stmt->execute([$data['request_id']]);
         $request = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$request) 
-        {
+        if (!$request) {
             respondError("Delete request not found", 404);
         }
 
         $payload = json_decode($request['payload'], true);
-        if (!isset($payload['product_id'])) 
-        {
-            respondError("Payload must include 'product_id'", 400);
+
+        if (empty($payload['productID']) || empty($payload['retailerID'])) {
+            respondError("Missing productID or retailerID in payload", 400);
         }
 
-        // Attempt to delete the product
-        $delete = $this->conn->prepare("DELETE FROM products WHERE product_id = ? AND retailer_id = ?");
-        $delete->execute([$payload['product_id'], $request['retailer_id']]);
+        $productID = $payload['productID'];
 
-        if ($delete->rowCount() === 0) 
-        {
-            respondError("Product not found or you don't have permission to delete it", 404);
+        $this->conn->beginTransaction();
+        try {
+            $this->conn->prepare("DELETE FROM comparisons WHERE productID = ?")->execute([$productID]);
+            $this->conn->prepare("DELETE FROM productbrand WHERE productID = ?")->execute([$productID]);
+            $this->conn->prepare("DELETE FROM productcategory WHERE productID = ?")->execute([$productID]);
+            $delete = $this->conn->prepare("DELETE FROM products WHERE productID = ?");
+            $delete->execute([$productID]);
+
+            if ($delete->rowCount() === 0) {
+                $this->conn->rollBack();
+                respondError("Product not found or already deleted", 404);
+            }
+
+            $this->conn->prepare("
+                UPDATE requests SET status = 'approved', modified_at = NOW()
+                WHERE requestID = ?
+            ")->execute([$data['request_id']]);
+
+            $this->conn->commit();
+
+            respondJSON([
+                "status" => "success",
+                "message" => "Delete request approved and product deleted"
+            ]);
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            respondError("Failed to approve delete request: " . $e->getMessage(), 500);
         }
-
-        // Update request status to approved
-        $update = $this->conn->prepare("UPDATE requests SET status = 'approved', updated_at = NOW() WHERE request_id = ?");
-        $update->execute([$data['request_id']]);
-
-        respondJSON([
-            "status" => "success",
-            "message" => "Delete request approved and product deleted"
-        ]);
     }
 
     //(Decline) requests 
     private function handleDeclineRequest($data)
     {
-        if (!isset($data['request_id'])) 
-        {
+        if (!isset($data['request_id'])) {
             respondError("Missing 'request_id'", 400);
         }
 
-        // Check that the request exists
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE request_id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE requestID = ?");
         $stmt->execute([$data['request_id']]);
         $request = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$request) 
-        {
+        if (!$request) {
             respondError("Request not found", 404);
         }
 
-        // Update request status to declined
-        $stmt = $this->conn->prepare("UPDATE requests SET status = 'declined', updated_at = NOW() WHERE request_id = ?");
+        $stmt = $this->conn->prepare("
+            UPDATE requests SET status = 'declined', modified_at = NOW()
+            WHERE requestID = ?
+        ");
         $stmt->execute([$data['request_id']]);
 
         respondJSON([
@@ -1085,37 +960,180 @@ class API
         ]);
     }
 
-    //Retailer
     private function handleGetAllRetailerRequests($data)
     {
-        $filter = isset($data['filter']) ? strtolower($data['filter']) : null;
-        $requests = [];
-
-        if ($filter === 'pending')
-        {
-            $requests = $this->pendingRequestsFilter($data);
-        } 
-        else if ($filter === 'approved') 
-        {
-            $requests = $this->approvedRequestsFilter($data);
-        } 
-        else 
-        {
-            // No filter or unknown filter — return all
-            $stmt = $this->conn->prepare("SELECT * FROM requests");
-            $stmt->execute();
-            $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!isset($data['retailer_id'])) {
+            respondError("Missing 'retailer_id'", 400);
         }
 
-        if (!$requests) 
-        {
-            respondError("No requests found", 404);
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE retailerID = ? ORDER BY created_at DESC");
+        $stmt->execute([$data['retailer_id']]);
+        $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Decode JSON payloads if available
+        foreach ($requests as &$request) {
+            if (!empty($request['payload'])) {
+                $decoded = json_decode($request['payload'], true);
+                $request['payload'] = is_array($decoded) ? $decoded : null;
+            } else {
+                $request['payload'] = null;
+            }
         }
 
         respondJSON([
             "status" => "success",
-            "timestamp" => round(microtime(true) * 1000),
-            "data" => $requests
+            "requests" => $requests
+        ]);
+    }
+
+     // CRUD OPERATIONS
+    //Add Product Request
+    private function handleAddProductRequest($data)
+    {
+        $requiredFields = ['product_name', 'description', 'brandID', 'categoryID', 'price', 'imageURL', 'retailerID'];
+        foreach ($requiredFields as $field) 
+        {
+            if (!isset($data[$field]) || $data[$field] === "") 
+            {
+                respondError("Missing field: $field", 400);
+            }
+        }
+
+        $payload = json_encode([
+            'product_name' => $data['product_name'],
+            'description' => $data['description'],
+            'brandID' => (int)$data['brandID'],
+            'categoryID' => (int)$data['categoryID'],
+            'price' => (float)$data['price'],
+            'imageURL' => $data['imageURL']
+        ]);
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO requests (retailerID, requestCode, payload, status, created_at)
+            VALUES (?, 'ADD_PRODUCT', ?, 'pending', NOW())
+        ");
+        $stmt->execute([$data['retailerID'], $payload]);
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Add product request submitted to admin"
+        ]);
+    }
+
+    //Update Product Request
+    private function handleUpdateProductRequest($data)
+    {
+        $requiredFields = ['productID', 'retailerID'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                respondError("Missing field: $field", 400);
+            }
+        }
+
+        $payload = [
+            'productID' => (int)$data['productID']
+        ];
+
+        foreach (['product_name', 'description', 'brandID', 'categoryID', 'price', 'imageURL'] as $field) 
+        {
+            if (isset($data[$field]) && $data[$field] !== "") 
+            {
+                $payload[$field] = $data[$field];
+            }
+        }
+
+        if (count($payload) === 1) 
+        { // Only has productID
+            respondError("No fields to update", 400);
+        }
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO requests (retailerID, requestCode, payload, status, created_at)
+            VALUES (?, 'UPD_PRODUCT', ?, 'pending', NOW())
+        ");
+        $stmt->execute([$data['retailerID'], json_encode($payload)]);
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Update product request submitted to admin"
+        ]);
+    }
+
+    //Delete Product Request
+    private function handleDeleteProductRequest($data)
+    {
+        if (!isset($data['productID'], $data['retailerID'])) {
+            respondError("Missing productID or retailerID", 400);
+        }
+
+        $payload = json_encode([
+            'productID' => (int)$data['productID']
+        ]);
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO requests (retailerID, requestCode, payload, status, created_at)
+            VALUES (?, 'DEL_PRODUCT', ?, 'pending', NOW())
+        ");
+        $stmt->execute([$data['retailerID'], $payload]);
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Delete product request submitted to admin"
+        ]);
+    }
+
+    private function handleEditRequest($data)
+    {
+        if (!isset($data['request_id'], $data['retailer_id'])) {
+            respondError("Missing 'request_id' or 'retailer_id'", 400);
+        }
+
+        // Ensure request exists, is owned by retailer, and is still pending
+        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE requestID = ? AND retailerID = ? AND status = 'pending'");
+        $stmt->execute([$data['request_id'], $data['retailer_id']]);
+        $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$existing) {
+            respondError("Editable pending request not found", 404);
+        }
+
+        // Ensure valid payload
+        if (!isset($data['payload']) || !is_array($data['payload'])) {
+            respondError("Missing or invalid 'payload'", 400);
+        }
+
+        // JSON-encode payload
+        $payload = json_encode($data['payload']);
+
+        // Update payload
+        $update = $this->conn->prepare("UPDATE requests SET payload = ?, modified_at = NOW() WHERE requestID = ?");
+        $update->execute([$payload, $data['request_id']]);
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Request updated successfully"
+        ]);
+    }
+
+    private function handleDeleteRequest($data)
+    {
+        if (!isset($data['request_id'], $data['retailer_id'])) {
+            respondError("Missing 'request_id' or 'retailer_id'", 400);
+        }
+
+        $stmt = $this->conn->prepare("
+            DELETE FROM requests 
+            WHERE requestID = ? AND retailerID = ? AND status = 'pending'
+        ");
+        $stmt->execute([$data['request_id'], $data['retailer_id']]);
+
+        if ($stmt->rowCount() === 0) {
+            respondError("Request not found or cannot be deleted", 404);
+        }
+
+        respondJSON([
+            "status" => "success",
+            "message" => "Request deleted successfully"
         ]);
     }
 
