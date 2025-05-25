@@ -129,18 +129,10 @@ class API
     //Register
     private function handleRegister($data)
     {
-        $username = trim($data['username'] ?? '');
-        $name = trim($data['name'] ?? '');
-        $surname = trim($data['surname'] ?? '');
+        //Email is login username 
+        $userType = trim($data['user_type'] ?? '');
         $email = trim($data['email'] ?? '');
         $password = trim($data['password'] ?? '');
-        $phoneNumber = trim($data['phone_number'] ?? '');
-        // $userType = trim($data['user_type'] ?? '');
-
-        if ($username === '' || $name === '' || $surname === '' || $email === '' || $password === '' || $phoneNumber) 
-        {
-            respondError("Missing fields", 400);
-        }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
         {
@@ -152,62 +144,175 @@ class API
             respondError("Password must be at least 8 characters and include uppercase, lowercase, number, and symbol", 400);
         }
 
-        $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = ?");
+        //Check if email already exists in userbase
+        $stmt = $this->conn->prepare("SELECT userID FROM userbase WHERE email = ?");
         $stmt->execute([$email]);
-        if ($stmt->fetch()) 
-        {
+        if ($stmt->fetch()) {
             respondError("Email already exists", 409);
         }
 
+        //hashed password
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $this->conn->prepare("INSERT INTO users (username, name, surname, email, password, phone_number) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$username, $name, $surname, $email, $hashedPassword, $phoneNumber]);
-            
-        respondJSON([
-            "status" => "success",
-            "timestamp" => round(microtime(true) * 1000),
-            "data" => ["username" => $username]
-        ]);
+
+        //apikey generator 
+        $apiKey = bin2hex(random_bytes(24));
+
+        if ($userType === 'user') 
+        {
+            $username = trim($data['username'] ?? '');
+            $name = trim($data['name'] ?? '');
+            $surname = trim($data['surname'] ?? '');
+
+            if ($username === '' || $name === '' || $surname === '') {
+                respondError("Missing user fields", 400);
+            }
+
+            // Insert into userbase
+            $stmt = $this->conn->prepare("INSERT INTO userbase (password, email, api_key) VALUES (?, ?, ?)");
+            $stmt->execute([$email, $hashedPassword, $apiKey]);
+            $userID = $this->conn->lastInsertId();
+
+            // Insert into user table
+            $stmt = $this->conn->prepare("INSERT INTO user (userID, username, userFname, userSname) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$userID, $username, $name, $surname]);
+
+            respondJSON([
+                "status" => "success",
+                "message" => "User registered successfully",
+                "data" => [
+                    "userID" => $userID,
+                    "email" => $email,
+                    "api_key" => $apiKey
+                ]
+            ]);
+        } 
+        elseif ($userType === 'retailer') 
+        {
+            $retailerName = trim($data['retailer_name'] ?? '');
+            $phoneNumber = trim($data['phone_number'] ?? '');
+
+            if ($retailerName === '' || $phoneNumber === '') {
+                respondError("Missing retailer fields", 400);
+            }
+
+            // Insert into userbase
+            $stmt = $this->conn->prepare("INSERT INTO userbase (email, password, api_key, phone_number) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$email, $hashedPassword, $apiKey, $phoneNumber]);
+            $userID = $this->conn->lastInsertId();
+
+            // Insert into retailer
+            $stmt = $this->conn->prepare("INSERT INTO retailer (retailerName) VALUES (?)");
+            $stmt->execute([$retailerName]);
+            $retailerID = $this->conn->lastInsertId();
+
+            // Generate retailerCode
+            $retailerCode = 'R' . $retailerID;
+
+            // Insert into retaileruser
+            $stmt = $this->conn->prepare("INSERT INTO retaileruser (userID, retailerID, retailerCode) VALUES (?, ?, ?)");
+            $stmt->execute([$userID, $retailerID, $retailerCode]);
+
+            respondJSON([
+                "status" => "success",
+                "message" => "Retailer registered successfully",
+                "data" => [
+                    "userID" => $userID,
+                    "retailerID" => $retailerID,
+                    "retailerCode" => $retailerCode,
+                    "email" => $email,
+                    "api_key" => $apiKey
+                ]
+            ]);
+
+        } 
+        else 
+        {
+            respondError("Invalid user type", 400);
+        }
 
     }
 
     //Login 
     private function handleLogin($data)
     {
-        $username = trim($data['username'] ?? '');
+        $email = trim($data['email'] ?? '');
         $password = trim($data['password'] ?? '');
-        $name = trim($data['name'] ?? '');
 
-        //Ensure username and password are provided
-        foreach (['username', 'password'] as $field) 
+        if ($email === '' || $password === '') 
         {
-            if (empty($data[$field])) 
-            {
-                respondError("Missing field: $field", 400);
-            }
+            respondError("Missing email or password", 400);
         }
 
-        //Fetch user from database with username
-        $stmt = $this->conn->prepare("SELECT id, username, name, password FROM users WHERE username = :username AND password = :password");
-        $stmt->execute([$username]);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
+        {
+            respondError("Invalid email format", 400);
+        }
+
+        //Get user from userbase
+        $stmt = $this->conn->prepare("SELECT userID, password, api_key FROM userbase WHERE email = ?");
+        $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user || !password_verify($password, $user['password'])) 
         {
-            respondError("Invalid username or password", 401);
+            respondError("Invalid email or password", 401);
         }
 
-        //JSON Success Response
+        $userID = $user['userID'];
+        $apiKey = $user['api_key'];
+        $userType = 'unknown';
+        $userInfo = [];
+
+        // Try normal user
+        $stmt = $this->conn->prepare("SELECT username, userFname, userSname FROM user WHERE userID = ?");
+        $stmt->execute([$userID]);
+        $userResult = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($userResult) 
+        {
+            $userType = 'user';
+            $userInfo = $userResult;
+        } 
+        else 
+        {
+            // Try retailer
+            $stmt = $this->conn->prepare("
+                SELECT ru.retailerCode, r.retailerName 
+                FROM retaileruser ru
+                JOIN retailer r ON ru.retailerID = r.retailerID 
+                WHERE ru.userID = ?
+            ");
+            $stmt->execute([$userID]);
+            $retailerResult = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($retailerResult) 
+            {
+                $userType = 'retailer';
+                $userInfo = $retailerResult;
+            } 
+            else 
+            {
+                // Try admin
+                $stmt = $this->conn->prepare("SELECT adminID, admin_name FROM admin WHERE userID = ?");
+                $stmt->execute([$userID]);
+                $adminResult = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($adminResult) {
+                    $userType = 'admin';
+                    $userInfo = $adminResult;
+                }
+            }
+        }
+
         respondJSON([
             "status" => "success",
             "timestamp" => round(microtime(true) * 1000),
             "data" => [
-                "username" => $username,
-                "name" => $name,
-                // "user_type" => $user['user_type'],
-                // "user_id" => $user['id'],
-                //'phoneNumber' => $user['phone_number'],
-                // "email" => $user['email'],
+                "userID" => $userID,
+                "email" => $email,
+                "api_key" => $apiKey,
+                "user_type" => $userType,
+                "info" => $userInfo
             ]
         ]);
     }
@@ -215,20 +320,18 @@ class API
     //Logout 
     private function handleLogout($data)
     {
-        $username = trim($data['username'] ?? '');
+        $email = trim($data['email'] ?? '');
 
-        //Ensure username is provided
-        if (empty($username)) 
+        if ($email === '') 
         {
-            respondError("Missing field: username", 400);
+            respondError("Missing email", 400);
         }
 
-        //JSON Success Response
         respondJSON([
             "status" => "success",
             "timestamp" => round(microtime(true) * 1000),
             "data" => [
-                "username" => $username,
+                "email" => $email,
                 "message" => "Logout successful"
             ]
         ]);
