@@ -392,6 +392,60 @@ function clearAllFilters() {
   });
 }
 
+// Check for new retailer responses
+function checkForNewResponses() {
+  const userReviews = JSON.parse(localStorage.getItem('userReviews') || '[]');
+  const lastChecked = localStorage.getItem('lastResponseCheck') || '0';
+  
+  // Get mock responses (simulating retailer responses)
+  const mockResponses = JSON.parse(localStorage.getItem('mockResponses') || '[]');
+  
+  // Count responses that came after last check
+  let newResponseCount = 0;
+  mockResponses.forEach(response => {
+    if (new Date(response.date) > new Date(lastChecked)) {
+      newResponseCount++;
+    }
+  });
+  
+  // Update notification badge
+  updateNotificationBadge(newResponseCount);
+}
+
+function updateNotificationBadge(count) {
+  const badge = document.getElementById('notificationBadge');
+  
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+// Function to simulate retailer response (for testing)
+function simulateRetailerResponse(productId, responseText, retailerName = 'Pick n Pay') {
+  const responses = JSON.parse(localStorage.getItem('mockResponses') || '[]');
+  
+  const newResponse = {
+    productId: productId,
+    retailer: retailerName,
+    text: responseText,
+    date: new Date().toISOString(),
+    id: Date.now()
+  };
+  
+  responses.push(newResponse);
+  localStorage.setItem('mockResponses', JSON.stringify(responses));
+  
+  // Trigger notification check
+  checkForNewResponses();
+  
+  alert(`New response from ${retailerName}! Check the Reviews page.`);
+}
+
 // Legacy function for compatibility (kept in case it's called elsewhere)
 function toggleReview(button) {
   // This function is now handled by the new review system
@@ -416,6 +470,26 @@ function addResetButton() {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   initializeApp();
+  
+  // Check for new retailer responses
+  checkForNewResponses();
+  
+  // Check every 30 seconds for new responses
+  setInterval(checkForNewResponses, 30000);
+  
+  // Mark responses as read when Reviews link is clicked
+  const reviewsLink = document.getElementById('reviewsLink');
+  if (reviewsLink) {
+    reviewsLink.addEventListener('click', function() {
+      // Mark current time as last checked
+      localStorage.setItem('lastResponseCheck', new Date().toISOString());
+      
+      // Hide badge after a short delay
+      setTimeout(() => {
+        updateNotificationBadge(0);
+      }, 100);
+    });
+  }
   
   // Optionally add reset button
   // addResetButton();
