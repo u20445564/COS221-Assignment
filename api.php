@@ -168,7 +168,7 @@ class API
             }
 
             // Insert into userbase
-            $stmt = $this->conn->prepare("INSERT INTO userbase (password, email, api_key) VALUES (?, ?, ?)");
+            $stmt = $this->conn->prepare("INSERT INTO userbase (password, email, api_key) VALUES (?, ?, ?)"); //why are we using the api key as the phone number?
             $stmt->execute([$email, $hashedPassword, $apiKey]);
             $userID = $this->conn->lastInsertId();
 
@@ -382,7 +382,7 @@ class API
     //Sort products
     private function buildSortClause($data)
     {
-        $allowedSortFields = ['product_name', 'price', 'brand', 'category'];
+        $allowedSortFields = ['product_name', 'price', 'brandID', 'categoryID'];
         $allowedSortOrders = ['ASC', 'DESC'];
 
         $sortBy = in_array($data['sort_by'] ?? '', $allowedSortFields) ? $data['sort_by'] : 'product_name';
@@ -1027,7 +1027,7 @@ class API
     }
 
     //Retailer
-    private function handleGetAllRetailerRequests($data)
+    private function handleGetAllRetailerRequests($data) //done
     {
         $filter = isset($data['filter']) ? strtolower($data['filter']) : null;
         $requests = [];
@@ -1043,7 +1043,9 @@ class API
         else 
         {
             // No filter or unknown filter — return all
-            $stmt = $this->conn->prepare("SELECT * FROM requests");
+            $stmt = $this->conn->prepare("
+            SELECT * 
+            FROM request");
             $stmt->execute();
             $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -1060,16 +1062,23 @@ class API
         ]);
     }
 
-    private function pendingRequestsFilter($data)
+    private function pendingRequestsFilter($data)//done
     {
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE status = 'pending'");
+        $stmt = $this->conn->prepare("
+        SELECT * 
+        FROM request 
+        WHERE resolved = 0");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function approvedRequestsFilter($data)
+    private function approvedRequestsFilter($data) //done
     {
-        $stmt = $this->conn->prepare("SELECT * FROM requests WHERE status = 'approved'");
+        $stmt = $this->conn->prepare("
+        SELECT * 
+        FROM request 
+        WHERE resolved =1
+        ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -1091,3 +1100,5 @@ function respondError($message, $code = 400)
         "error" => $message
     ], $code);
 }
+
+?>
