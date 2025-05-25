@@ -36,6 +36,7 @@ class API
 
         switch ($data['type']) 
         {
+            //REGISTER, LOGIN AND LOGOUT
             case 'Register':
                 $this->handleRegister($data);
                 break;
@@ -47,12 +48,17 @@ class API
                 break;
 
             //PRODUCTS 
+            //User and Admin
             case 'GetAllProducts':
                 $this->handleGetAllProducts($data);
                 break;
 
-            //Retailer
-            // product specific 
+            //Retailer 
+            case 'GetAllRetailerProducts':
+                $this->handleGetAllRetailerProducts($data);
+                break;
+
+            //CRUD Operations for Products. However these are just requests 
             case 'AddProduct':
                 $this->handleAddProduct($data);
                 break;
@@ -358,8 +364,139 @@ class API
         // Sort clause
         $sortClause = $this->buildSortClause($data);
 
-        // Final SQL
-        $sql = "SELECT * FROM products $whereClause $sortClause";
+        // Final SQL (with joins to get category, brand, and lowest price from comparisons)
+            $sql = "
+                SELECT p.product_id, p.product_name, p.description, p.imageURL, p.specification,
+                    c.category_name, b.brand_name,
+                    MIN(cp.price) AS lowest_price
+                FROM products p
+                LEFT JOIN productsCategory pc ON p.product_id = pc.productID
+                LEFT JOIN category c ON pc.categoryID = c.categoryID
+                LEFT JOIN productsBrand pb ON p.product_id = pb.productID
+                LEFT JOIN brand b ON pb.brandID = b.brandID
+                LEFT JOIN comparisons cp ON p.product_id = cp.productID
+                $whereClause
+                GROUP BY p.product_id
+                $sortClause
+            ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // For each product, get all retailer prices
+        foreach ($products as &$product) 
+        {
+            $pricesStmt = $this->conn->prepare("
+                SELECT r.retailerName, cp.price 
+                FROM comparisons cp
+                JOIN retailer r ON cp.retailerID = r.retailerID
+                WHERE cp.productID = ?
+            ");
+            $pricesStmt->execute([$product['product_id']]);
+            $product['retailer_prices'] = $pricesStmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        respondJSON([
+            "status" => "success",
+            "timestamp" => round(microtime(true) * 1000),
+            "data" => $products
+        ]);
+    }
+
+    //Helper functions for get all products
+
+    // Sort products
+    private function buildSortClause($data)
+    {
+        $map = [
+            'price_low' => "ORDER BY lowest_price ASC",
+            'price_high' => "ORDER BY lowest_price DESC",
+            'name' => "ORDER BY p.product_name ASC"
+        ];
+
+        $sortKey = $data['sort_by'] ?? 'name';
+        return $map[$sortKey] ?? $map['name'];
+    }
+
+    // Filter products
+    private function buildProductFilters($data, &$params, $isRetailer = false)
+    {
+        $filters = [];
+
+        if (isset($data['category']) && $data['category'] !== "") 
+        {
+            $filters[] = "c.category_name = ?";
+            $params[] = $data['category'];
+        }
+
+        if (isset($data['brand']) && $data['brand'] !== "") 
+        {
+            $filters[] = "b.brand_name = ?";
+            $params[] = $data['brand'];
+        }
+
+        if (isset($data['min_price']) && is_numeric($data['min_price'])) 
+        {
+            $filters[] = "cp.price >= ?";
+            $params[] = $data['min_price'];
+        }
+
+        if (isset($data['max_price']) && is_numeric($data['max_price'])) 
+        {
+            $filters[] = "cp.price <= ?";
+            $params[] = $data['max_price'];
+        }
+
+        return $filters;
+    }
+
+    // Search clause
+    private function buildSearchClause($data, &$params)
+    {
+        if (isset($data['search']) && trim($data['search']) !== '') 
+        {
+            $params[] = '%' . trim($data['search']) . '%';
+            return "p.product_name LIKE ?";
+        }
+
+        return '';
+    }
+
+    //RETAILER 
+    //Get retailer products 
+    private function handleGetAllRetailerProducts($data)
+    {
+        if (!isset($data['retailer_id'])) 
+        {
+            respondError("Missing retailer ID", 400);
+        }
+
+        $params = [$data['retailer_id']];
+
+        $filters = $this->buildProductFilters($data, $params, true);
+        $searchClause = $this->buildSearchClause($data, $params);
+        if ($searchClause !== '') 
+        {
+            $filters[] = $searchClause;
+        }
+
+        $whereClause = "WHERE cp.retailerID = ?" . (count($filters) > 0 ? " AND " . implode(" AND ", $filters) : "");
+
+        $sortClause = $this->buildSortClause($data);
+
+        $sql = "
+            SELECT p.product_id, p.product_name, p.description, p.imageURL, p.specification,
+                c.category_name, b.brand_name, cp.price
+            FROM products p
+            LEFT JOIN productsCategory pc ON p.product_id = pc.productID
+            LEFT JOIN category c ON pc.categoryID = c.categoryID
+            LEFT JOIN productsBrand pb ON p.product_id = pb.productID
+            LEFT JOIN brand b ON pb.brandID = b.brandID
+            JOIN comparisons cp ON p.product_id = cp.productID
+            $whereClause
+            $sortClause
+        ";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
@@ -375,47 +512,6 @@ class API
             "timestamp" => round(microtime(true) * 1000),
             "data" => $products
         ]);
-    }
-
-    //Helper functions for get all products
-
-    //Sort products
-    private function buildSortClause($data)
-    {
-        $allowedSortFields = ['product_name', 'price', 'brand', 'category'];
-        $allowedSortOrders = ['ASC', 'DESC'];
-
-        $sortBy = in_array($data['sort_by'] ?? '', $allowedSortFields) ? $data['sort_by'] : 'product_name';
-        $sortOrder = in_array(strtoupper($data['sort_order'] ?? ''), $allowedSortOrders) ? strtoupper($data['sort_order']) : 'ASC';
-
-        return "ORDER BY $sortBy $sortOrder";
-    }
-
-    //Filter products
-    private function buildProductFilters($data, &$params)
-    {
-        $filters = [];
-
-        $filterableFields = ['retailer_id', 'brand', 'category'];
-
-        foreach ($filterableFields as $field) {
-            if (isset($data[$field]) && $data[$field] !== "") {
-                $filters[] = "$field = ?";
-                $params[] = $data[$field];
-            }
-        }
-
-        return $filters;
-    }
-
-    //Search products
-    private function buildSearchClause($data, &$params)
-    {
-        if (isset($data['search']) && trim($data['search']) !== '') {
-            $params[] = '%' . $data['search'] . '%';
-            return "product_name LIKE ?";
-        }
-        return '';
     }
 
     // CRUD OPERATIONS
