@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Compare It! - Reviews</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0dcbd;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: rgb(17, 61, 42);
+      padding: 10px 10px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    nav .text {
+      color: white;
+      font-size: 45px;
+      font-weight: bold;
+    }
+
+    nav .nav-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    nav .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-weight: bold;
+      font-size: 25px;
+    }
+
+    nav .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .header-section {
+      background-color: rgb(17, 61, 42);
+      color: white;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 15px;
+    }
+    
+    .header-section h2 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .reviews-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .filter-bar {
+      background-color: white;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      margin-bottom: 20px;
+      padding: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-bar select, .filter-bar input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #113d2a;
+      background-color: #f9f9f9;
+    }
+
+    .filter-bar button {
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: #113d2a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .filter-bar button:hover {
+      background-color: #0f3326;
+    }
+
+    .review-card {
+      background-color: white;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      margin-bottom: 20px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #f0dcbd;
+      padding-bottom: 10px;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .product-details h3 {
+      margin: 0;
+      color: #113d2a;
+      font-size: 18px;
+    }
+
+    .product-details p {
+      margin: 5px 0 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .review-meta {
+      text-align: right;
+      color: #666;
+    }
+
+    .rating {
+      color: #ffcc00;
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    .review-date {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .customer-review {
+      margin: 15px 0;
+    }
+
+    .reviewer-name {
+      font-weight: bold;
+      color: #113d2a;
+      margin-bottom: 8px;
+    }
+
+    .review-text {
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .review-helpful {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .helpful-btn {
+      background: none;
+      border: 1px solid #ddd;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .helpful-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    .retailer-responses {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin-top: 15px;
+      padding: 15px;
+      border-left: 4px solid #113d2a;
+    }
+
+    .retailer-response {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .retailer-response:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .retailer-name {
+      font-weight: bold;
+      color: #113d2a;
+      margin-bottom: 5px;
+    }
+
+    .retailer-badge {
+      display: inline-block;
+      background-color: #113d2a;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin-left: 10px;
+    }
+
+    .response-text {
+      color: #555;
+      line-height: 1.4;
+      margin: 8px 0;
+    }
+
+    .response-date {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .no-responses {
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stats-bar {
+      background-color: white;
+      border-radius: 15px;
+      border: 2px solid #113d2a;
+      margin-bottom: 20px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      margin: 0;
+      color: #113d2a;
+      font-size: 24px;
+    }
+
+    .stat-item p {
+      margin: 5px 0 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .product-info {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .stats-bar {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="text">Compare It!</div>
+    <div class="nav-links">
+      <a href="products.html">Products</a>
+      <a href="reviews.html" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 10px;">Reviews</a>
+    </div>
+  </nav>
+
+  <div class="header-section">
+    <h2>Customer Reviews & Retailer Responses</h2>
+  </div>
+
+  <div class="reviews-container">
+    <!-- Statistics Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <h3>47</h3>
+        <p>Total Reviews</p>
+      </div>
+      <div class="stat-item">
+        <h3>4.2</h3>
+        <p>Average Rating</p>
+      </div>
+      <div class="stat-item">
+        <h3>23</h3>
+        <p>Retailer Responses</p>
+      </div>
+      <div class="stat-item">
+        <h3>89%</h3>
+        <p>Response Rate</p>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <select id="productFilter">
+        <option value="">All Products</option>
+        <option value="koo-beans">Koo Beans</option>
+        <option value="toilet-paper">Two Ply Toilet Paper</option>
+        <option value="coca-cola">Coca-Cola</option>
+        <option value="doom">Doom Spray</option>
+      </select>
+      
+      <select id="ratingFilter">
+        <option value="">All Ratings</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4 Stars</option>
+        <option value="3">3 Stars</option>
+        <option value="2">2 Stars</option>
+        <option value="1">1 Star</option>
+      </select>
+      
+      <select id="retailerFilter">
+        <option value="">All Retailers</option>
+        <option value="woolworths">Woolworths</option>
+        <option value="checkers">Checkers</option>
+        <option value="picknpay">Pick n Pay</option>
+      </select>
+      
+      <input type="text" id="searchReviews" placeholder="Search reviews...">
+      <button onclick="filterReviews()">Filter</button>
+      <button onclick="clearFilters()">Clear All</button>
+    </div>
+
+    <!-- Review Cards -->
+    <div class="review-card" data-product="koo-beans" data-rating="5">
+      <div class="review-header">
+        <div class="product-info">
+          <img src="./images/beans.png" alt="Koo Beans" class="product-image">
+          <div class="product-details">
+            <h3>Koo Beans</h3>
+            <p>Koo Baked Beans in Tomato Sauce 400g</p>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="rating">★★★★★</div>
+          <div class="review-date">2 days ago</div>
+        </div>
+      </div>
+      
+      <div class="customer-review">
+        <div class="reviewer-name">Sarah M.</div>
+        <div class="review-text">
+          Amazing quality beans! Perfect for quick family meals. The tomato sauce has great flavor and the beans are cooked perfectly. Pick n Pay had the best price for this product.
+        </div>
+        <div class="review-helpful">
+          <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (12)</button>
+          <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (1)</button>
+        </div>
+      </div>
+      
+      <div class="retailer-responses">
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Pick n Pay <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Thank you for your wonderful review, Sarah! We're delighted you enjoyed our competitive pricing on Koo Beans. We work hard to offer the best value to our customers.
+          </div>
+          <div class="response-date">1 day ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card" data-product="toilet-paper" data-rating="4">
+      <div class="review-header">
+        <div class="product-info">
+          <img src="./images/tissue.png" alt="Toilet Paper" class="product-image">
+          <div class="product-details">
+            <h3>Two Ply Toilet Paper</h3>
+            <p>Baby Soft Fresh White Two Ply Toilet Paper 18 pk</p>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="rating">★★★★☆</div>
+          <div class="review-date">5 days ago</div>
+        </div>
+      </div>
+      
+      <div class="customer-review">
+        <div class="reviewer-name">Mike R.</div>
+        <div class="review-text">
+          Good quality toilet paper, very soft and strong. All retailers had the same price (R169.99) so I went with Woolworths for convenience. Would recommend for families.
+        </div>
+        <div class="review-helpful">
+          <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (8)</button>
+          <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (0)</button>
+        </div>
+      </div>
+      
+      <div class="retailer-responses">
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Woolworths <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Hi Mike, thanks for choosing Woolworths! We're pleased you found our service convenient. We stock Baby Soft products because of their consistent quality and customer satisfaction.
+          </div>
+          <div class="response-date">4 days ago</div>
+        </div>
+        
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Checkers <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Thank you for the honest review! We also carry this popular Baby Soft range. Next time, check out our online ordering for even more convenience.
+          </div>
+          <div class="response-date">3 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card" data-product="coca-cola" data-rating="3">
+      <div class="review-header">
+        <div class="product-info">
+          <img src="./images/coke.png" alt="Coca-Cola" class="product-image">
+          <div class="product-details">
+            <h3>Coca-Cola</h3>
+            <p>Coca-Cola Original Soft Drink 2L</p>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="rating">★★★☆☆</div>
+          <div class="review-date">1 week ago</div>
+        </div>
+      </div>
+      
+      <div class="customer-review">
+        <div class="reviewer-name">Jessica L.</div>
+        <div class="review-text">
+          Standard Coke taste as expected. Pick n Pay had it slightly cheaper at R26.99 vs R27.99 elsewhere. Wish there were more size options available at better prices.
+        </div>
+        <div class="review-helpful">
+          <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (5)</button>
+          <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (2)</button>
+        </div>
+      </div>
+      
+      <div class="retailer-responses">
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Pick n Pay <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Thanks Jessica! We do our best to offer competitive prices. Keep an eye out for our weekly specials where we often feature different Coca-Cola sizes at great discounts.
+          </div>
+          <div class="response-date">6 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card" data-product="doom" data-rating="5">
+      <div class="review-header">
+        <div class="product-info">
+          <img src="./images/doom.png" alt="Doom Spray" class="product-image">
+          <div class="product-details">
+            <h3>Doom</h3>
+            <p>Doom Super Multi Insect Spray 300ml</p>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="rating">★★★★★</div>
+          <div class="review-date">1 week ago</div>
+        </div>
+      </div>
+      
+      <div class="customer-review">
+        <div class="reviewer-name">David K.</div>
+        <div class="review-text">
+          Excellent insect spray! Very effective against flies and mosquitoes. Woolworths had the best price at R47.99. Highly recommend for summer months.
+        </div>
+        <div class="review-helpful">
+          <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (15)</button>
+          <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (0)</button>
+        </div>
+      </div>
+      
+      <div class="retailer-responses">
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Woolworths <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Thank you David! We're glad you found our pricing competitive. Doom products are popular during summer, and we ensure good stock levels for our customers.
+          </div>
+          <div class="response-date">6 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card" data-product="koo-beans" data-rating="2">
+      <div class="review-header">
+        <div class="product-info">
+          <img src="./images/beans.png" alt="Koo Beans" class="product-image">
+          <div class="product-details">
+            <h3>Koo Beans</h3>
+            <p>Koo Baked Beans in Tomato Sauce 400g</p>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="rating">★★☆☆☆</div>
+          <div class="review-date">2 weeks ago</div>
+        </div>
+      </div>
+      
+      <div class="customer-review">
+        <div class="reviewer-name">Lisa T.</div>
+        <div class="review-text">
+          The can I bought from Checkers was dented and the beans were too salty. Not sure if it was a quality issue or just bad luck. Price was reasonable though.
+        </div>
+        <div class="review-helpful">
+          <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (3)</button>
+          <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (1)</button>
+        </div>
+      </div>
+      
+      <div class="retailer-responses">
+        <div class="retailer-response">
+          <div class="retailer-name">
+            Checkers <span class="retailer-badge">OFFICIAL</span>
+          </div>
+          <div class="response-text">
+            Hi Lisa, we're sorry to hear about your experience. Dented cans should not be sold. Please bring your receipt to any Checkers store for a full refund or exchange. We take product quality seriously.
+          </div>
+          <div class="response-date">2 weeks ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function markHelpful(button) {
+      const currentText = button.textContent;
+      const match = currentText.match(/\((\d+)\)/);
+      if (match) {
+        const count = parseInt(match[1]) + 1;
+        button.textContent = currentText.replace(/\(\d+\)/, `(${count})`);
+        button.style.backgroundColor = '#e8f5e8';
+        button.disabled = true;
+        setTimeout(() => {
+          button.style.backgroundColor = '';
+          button.disabled = false;
+        }, 2000);
+      }
+    }
+
+    function markNotHelpful(button) {
+      const currentText = button.textContent;
+      const match = currentText.match(/\((\d+)\)/);
+      if (match) {
+        const count = parseInt(match[1]) + 1;
+        button.textContent = currentText.replace(/\(\d+\)/, `(${count})`);
+        button.style.backgroundColor = '#ffe8e8';
+        button.disabled = true;
+        setTimeout(() => {
+          button.style.backgroundColor = '';
+          button.disabled = false;
+        }, 2000);
+      }
+    }
+
+    function filterReviews() {
+      const productFilter = document.getElementById('productFilter').value;
+      const ratingFilter = document.getElementById('ratingFilter').value;
+      const retailerFilter = document.getElementById('retailerFilter').value;
+      const searchText = document.getElementById('searchReviews').value.toLowerCase();
+      
+      const reviewCards = document.querySelectorAll('.review-card');
+      let visibleCount = 0;
+      
+      reviewCards.forEach(card => {
+        let showCard = true;
+        
+        // Product filter
+        if (productFilter && !card.dataset.product.includes(productFilter)) {
+          showCard = false;
+        }
+        
+        // Rating filter
+        if (ratingFilter && card.dataset.rating !== ratingFilter) {
+          showCard = false;
+        }
+        
+        // Search filter
+        if (searchText) {
+          const reviewText = card.querySelector('.review-text').textContent.toLowerCase();
+          const productName = card.querySelector('.product-details h3').textContent.toLowerCase();
+          if (!reviewText.includes(searchText) && !productName.includes(searchText)) {
+            showCard = false;
+          }
+        }
+        
+        // Show/hide card
+        if (showCard) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Show results
+      if (visibleCount === 0) {
+        alert('No reviews found matching your criteria.');
+      } else {
+        alert(`Found ${visibleCount} review(s) matching your criteria.`);
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('productFilter').value = '';
+      document.getElementById('ratingFilter').value = '';
+      document.getElementById('retailerFilter').value = '';
+      document.getElementById('searchReviews').value = '';
+      
+      // Show all reviews
+      const reviewCards = document.querySelectorAll('.review-card');
+      reviewCards.forEach(card => {
+        card.style.display = 'block';
+      });
+      
+      alert('All filters cleared!');
+    }
+
+    // Enter key support for search
+    document.getElementById('searchReviews').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        filterReviews();
+      }
+    });
+  </script>
+</body>
+</html>
