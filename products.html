@@ -370,5 +370,74 @@
   </div>
 
   <script src="products.js"></script>
+  <script>
+    // Check for new retailer responses when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      checkForNewResponses();
+      
+      // Check every 30 seconds for new responses (in a real app, this would be more sophisticated)
+      setInterval(checkForNewResponses, 30000);
+    });
+
+    function checkForNewResponses() {
+      const userReviews = JSON.parse(localStorage.getItem('userReviews') || '[]');
+      const lastChecked = localStorage.getItem('lastResponseCheck') || '0';
+      
+      // Simulate checking for new responses (in a real app, this would be an API call)
+      const mockResponses = JSON.parse(localStorage.getItem('mockResponses') || '[]');
+      
+      // Count responses that came after last check
+      let newResponseCount = 0;
+      mockResponses.forEach(response => {
+        if (new Date(response.date) > new Date(lastChecked)) {
+          newResponseCount++;
+        }
+      });
+      
+      // Update notification badge
+      updateNotificationBadge(newResponseCount);
+    }
+
+    function updateNotificationBadge(count) {
+      const badge = document.getElementById('notificationBadge');
+      
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Function to simulate retailer response (for testing)
+    function simulateRetailerResponse(productId, responseText) {
+      const responses = JSON.parse(localStorage.getItem('mockResponses') || '[]');
+      
+      const newResponse = {
+        productId: productId,
+        retailer: 'Pick n Pay',
+        text: responseText,
+        date: new Date().toISOString(),
+        id: Date.now()
+      };
+      
+      responses.push(newResponse);
+      localStorage.setItem('mockResponses', JSON.stringify(responses));
+      
+      // Trigger notification check
+      checkForNewResponses();
+    }
+
+    // Mark responses as read when visiting reviews page
+    document.getElementById('reviewsLink').addEventListener('click', function() {
+      // Mark current time as last checked
+      localStorage.setItem('lastResponseCheck', new Date().toISOString());
+      
+      // Hide badge immediately
+      setTimeout(() => {
+        updateNotificationBadge(0);
+      }, 100);
+    });
+  </script>
 </body>
 </html>
