@@ -5,28 +5,36 @@ const productData = [
     description: "Koo Baked Beans in Tomato Sauce 400 g",
     category: "tinned",
     prices: { woolworths: 19.99, checkers: 18.99, picknpay: 16.99 },
-    element: null // Will be populated
+    element: null, // Will be populated
+    productId: "koo-beans",
+    image: "./images/beans.png"
   },
   {
     name: "Two Ply Toilet Paper",
     description: "Baby Soft Fresh White Two Ply Toilet Paper 18 pk",
     category: "toiletries",
     prices: { woolworths: 169.99, checkers: 169.99, picknpay: 169.99 },
-    element: null
+    element: null,
+    productId: "toilet-paper",
+    image: "./images/tissue.png"
   },
   {
     name: "Coca-Cola",
     description: "Coca-Cola Original Soft Drink 2 L",
     category: "beverages",
     prices: { woolworths: 27.99, checkers: 27.99, picknpay: 26.99 },
-    element: null
+    element: null,
+    productId: "coca-cola",
+    image: "./images/coke.png"
   },
   {
     name: "Doom",
     description: "Doom Super Multi Insect Spray 300 ml",
     category: "cleaning",
     prices: { woolworths: 47.99, checkers: 49.99, picknpay: 49.99 },
-    element: null
+    element: null,
+    productId: "doom",
+    image: "./images/doom.png"
   }
 ];
 
@@ -42,6 +50,9 @@ function initializeApp() {
   
   // Set up event listeners
   setupEventListeners();
+  
+  // Set up review functionality
+  setupReviewFunctionality();
 }
 
 // Set up all event listeners
@@ -65,6 +76,168 @@ function setupEventListeners() {
   filterCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', applyFilters);
   });
+}
+
+// Set up review functionality for each product card
+function setupReviewFunctionality() {
+  const productCards = document.querySelectorAll('.product-card');
+  
+  productCards.forEach((card, index) => {
+    const reviewButton = card.querySelector('.add-review');
+    const reviewInput = card.querySelector('.review-input');
+    
+    if (reviewButton && reviewInput) {
+      // Remove old onclick attribute
+      reviewButton.removeAttribute('onclick');
+      
+      // Add new event listener
+      reviewButton.addEventListener('click', function() {
+        handleReviewSubmission(card, reviewButton, reviewInput, index);
+      });
+    }
+  });
+}
+
+// Handle review submission with rating
+function handleReviewSubmission(card, button, input, productIndex) {
+  if (input.style.display === 'none' || input.style.display === '') {
+    // Show review input with rating selection
+    showReviewForm(card, button, input, productIndex);
+  } else {
+    // Submit the review
+    submitReview(card, button, input, productIndex);
+  }
+}
+
+// Show review form with star rating
+function showReviewForm(card, button, input, productIndex) {
+  // Create star rating HTML
+  const ratingHTML = `
+    <div class="rating-selector" style="margin: 10px 0; text-align: center;">
+      <p style="margin: 5px 0; font-weight: bold; color: #113d2a;">Rate this product:</p>
+      <div class="stars" style="font-size: 24px; margin: 10px 0;">
+        <span class="star" data-rating="1" style="cursor: pointer; color: #ddd;">★</span>
+        <span class="star" data-rating="2" style="cursor: pointer; color: #ddd;">★</span>
+        <span class="star" data-rating="3" style="cursor: pointer; color: #ddd;">★</span>
+        <span class="star" data-rating="4" style="cursor: pointer; color: #ddd;">★</span>
+        <span class="star" data-rating="5" style="cursor: pointer; color: #ddd;">★</span>
+      </div>
+    </div>
+  `;
+  
+  // Insert rating selector before the input
+  input.insertAdjacentHTML('beforebegin', ratingHTML);
+  
+  // Show input and change button text
+  input.style.display = 'block';
+  input.placeholder = 'Write your detailed review here...';
+  button.textContent = 'Submit Review';
+  
+  // Add star rating functionality
+  const stars = card.querySelectorAll('.star');
+  let selectedRating = 0;
+  
+  stars.forEach(star => {
+    star.addEventListener('mouseover', function() {
+      const rating = parseInt(this.getAttribute('data-rating'));
+      highlightStars(stars, rating);
+    });
+    
+    star.addEventListener('mouseout', function() {
+      highlightStars(stars, selectedRating);
+    });
+    
+    star.addEventListener('click', function() {
+      selectedRating = parseInt(this.getAttribute('data-rating'));
+      highlightStars(stars, selectedRating);
+    });
+  });
+  
+  // Store selected rating in input's dataset
+  input.addEventListener('input', function() {
+    input.dataset.rating = selectedRating;
+  });
+}
+
+// Highlight stars based on rating
+function highlightStars(stars, rating) {
+  stars.forEach((star, index) => {
+    if (index < rating) {
+      star.style.color = '#ffcc00';
+    } else {
+      star.style.color = '#ddd';
+    }
+  });
+}
+
+// Submit the review
+function submitReview(card, button, input, productIndex) {
+  const reviewText = input.value.trim();
+  const rating = parseInt(input.dataset.rating) || 0;
+  
+  if (!reviewText) {
+    alert('Please write a review before submitting.');
+    return;
+  }
+  
+  if (rating === 0) {
+    alert('Please select a star rating before submitting.');
+    return;
+  }
+  
+  // Get product data
+  const product = productData[productIndex];
+  
+  // Create review object
+  const review = {
+    productId: product.productId,
+    productName: product.name,
+    productDescription: product.description,
+    productImage: product.image,
+    text: reviewText,
+    rating: rating,
+    date: new Date().toISOString(),
+    id: Date.now() // Simple ID generation
+  };
+  
+  // Save to localStorage
+  saveReview(review);
+  
+  // Show success message
+  alert('Review submitted successfully! You can view it on the Reviews page.');
+  
+  // Reset the form
+  resetReviewForm(card, button, input);
+}
+
+// Save review to localStorage
+function saveReview(review) {
+  let userReviews = JSON.parse(localStorage.getItem('userReviews') || '[]');
+  userReviews.unshift(review); // Add to beginning of array (most recent first)
+  
+  // Keep only last 10 reviews to prevent storage bloat
+  if (userReviews.length > 10) {
+    userReviews = userReviews.slice(0, 10);
+  }
+  
+  localStorage.setItem('userReviews', JSON.stringify(userReviews));
+}
+
+// Reset review form
+function resetReviewForm(card, button, input) {
+  // Remove rating selector
+  const ratingSelector = card.querySelector('.rating-selector');
+  if (ratingSelector) {
+    ratingSelector.remove();
+  }
+  
+  // Reset input
+  input.value = '';
+  input.style.display = 'none';
+  input.removeAttribute('data-rating');
+  
+  // Reset button
+  button.textContent = 'Add a review...';
 }
 
 // Toggle filters section
@@ -219,21 +392,10 @@ function clearAllFilters() {
   });
 }
 
-// Review functionality (keeping existing function)
+// Legacy function for compatibility (kept in case it's called elsewhere)
 function toggleReview(button) {
-  const input = button.nextElementSibling;
-  
-  if (input.style.display === 'none' || input.style.display === '') {
-    input.style.display = 'block';
-    button.textContent = 'Submit Review';
-  } else {
-    if (input.value.trim()) {
-      alert('Review submitted!');
-      input.value = '';
-    }
-    input.style.display = 'none';
-    button.textContent = 'Add a review...';
-  }
+  // This function is now handled by the new review system
+  console.log('Legacy toggleReview called - using new review system instead');
 }
 
 // Utility function to add a reset filters button (optional)
