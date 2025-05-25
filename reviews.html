@@ -251,6 +251,37 @@
       padding: 20px;
     }
 
+    /* Your Review Styles */
+    .your-review {
+      border: 3px solid #29805a !important;
+      background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
+    }
+
+    .your-review .review-header {
+      border-bottom: 2px solid #29805a;
+    }
+
+    .your-review-badge {
+      background-color: #29805a;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .no-feedback {
+      background-color: #f0f8ff;
+      border: 1px dashed #29805a;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+
     .stats-bar {
       background-color: white;
       border-radius: 15px;
@@ -312,26 +343,6 @@
   </div>
 
   <div class="reviews-container">
-    <!-- Statistics Bar -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <h3>47</h3>
-        <p>Total Reviews</p>
-      </div>
-      <div class="stat-item">
-        <h3>4.2</h3>
-        <p>Average Rating</p>
-      </div>
-      <div class="stat-item">
-        <h3>23</h3>
-        <p>Retailer Responses</p>
-      </div>
-      <div class="stat-item">
-        <h3>89%</h3>
-        <p>Response Rate</p>
-      </div>
-    </div>
-
     <!-- Filter Bar -->
     <div class="filter-bar">
       <select id="productFilter">
@@ -361,6 +372,19 @@
       <input type="text" id="searchReviews" placeholder="Search reviews...">
       <button onclick="filterReviews()">Filter</button>
       <button onclick="clearFilters()">Clear All</button>
+    </div>
+
+    <!-- Your Recent Reviews Section -->
+    <div class="header-section" style="margin: 20px 0; background-color: #29805a;">
+      <h2>Your Recent Reviews</h2>
+    </div>
+
+    <!-- Your submitted reviews will appear here -->
+    <div id="yourReviews"></div>
+
+    <!-- All Reviews Section -->
+    <div class="header-section" style="margin: 20px 0;">
+      <h2>All Customer Reviews</h2>
     </div>
 
     <!-- Review Cards -->
@@ -571,6 +595,109 @@
   </div>
 
   <script>
+    // Product data mapping for your reviews
+    const productDataMap = {
+      'koo-beans': {
+        name: 'Koo Beans',
+        description: 'Koo Baked Beans in Tomato Sauce 400g',
+        image: './images/beans.png'
+      },
+      'toilet-paper': {
+        name: 'Two Ply Toilet Paper',
+        description: 'Baby Soft Fresh White Two Ply Toilet Paper 18 pk',
+        image: './images/tissue.png'
+      },
+      'coca-cola': {
+        name: 'Coca-Cola',
+        description: 'Coca-Cola Original Soft Drink 2L',
+        image: './images/coke.png'
+      },
+      'doom': {
+        name: 'Doom',
+        description: 'Doom Super Multi Insect Spray 300ml',
+        image: './images/doom.png'
+      }
+    };
+
+    // Load your submitted reviews when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      loadYourReviews();
+    });
+
+    function loadYourReviews() {
+      const yourReviews = JSON.parse(localStorage.getItem('userReviews') || '[]');
+      const yourReviewsContainer = document.getElementById('yourReviews');
+      
+      if (yourReviews.length === 0) {
+        yourReviewsContainer.innerHTML = `
+          <div class="review-card" style="text-align: center; color: #666;">
+            <p>You haven't submitted any reviews yet. <a href="products.html" style="color: #29805a; text-decoration: none; font-weight: bold;">Go back to products</a> to leave your first review!</p>
+          </div>`;
+        return;
+      }
+
+      yourReviews.forEach((review, index) => {
+        const reviewCard = createYourReviewCard(review, index);
+        yourReviewsContainer.appendChild(reviewCard);
+      });
+    }
+
+    function createYourReviewCard(review, index) {
+      const card = document.createElement('div');
+      card.className = 'review-card your-review';
+      card.setAttribute('data-product', review.productId);
+      card.setAttribute('data-rating', review.rating);
+      
+      const productData = productDataMap[review.productId];
+      if (!productData) return card;
+
+      const starsDisplay = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+      
+      card.innerHTML = `
+        <div class="review-header">
+          <div class="product-info">
+            <img src="${productData.image}" alt="${productData.name}" class="product-image">
+            <div class="product-details">
+              <h3>${productData.name} <span class="your-review-badge">YOUR REVIEW</span></h3>
+              <p>${productData.description}</p>
+            </div>
+          </div>
+          <div class="review-meta">
+            <div class="rating">${starsDisplay}</div>
+            <div class="review-date">${formatDate(review.date)}</div>
+          </div>
+        </div>
+        
+        <div class="customer-review">
+          <div class="reviewer-name">You</div>
+          <div class="review-text">${review.text}</div>
+          <div class="review-helpful">
+            <button class="helpful-btn" onclick="markHelpful(this)">👍 Helpful (0)</button>
+            <button class="helpful-btn" onclick="markNotHelpful(this)">👎 Not Helpful (0)</button>
+          </div>
+        </div>
+        
+        <div class="no-feedback">
+          <p>🔔 No retailer responses yet. Retailers typically respond within 2-3 business days.</p>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) return 'Today';
+      if (diffDays === 2) return 'Yesterday';
+      if (diffDays <= 7) return `${diffDays - 1} days ago`;
+      if (diffDays <= 14) return '1 week ago';
+      return `${Math.floor(diffDays / 7)} weeks ago`;
+    }
+
     function markHelpful(button) {
       const currentText = button.textContent;
       const match = currentText.match(/\((\d+)\)/);
@@ -611,6 +738,11 @@
       let visibleCount = 0;
       
       reviewCards.forEach(card => {
+        // Skip the empty state card
+        if (card.textContent.includes("You haven't submitted any reviews yet")) {
+          return;
+        }
+        
         let showCard = true;
         
         // Product filter
@@ -625,10 +757,15 @@
         
         // Search filter
         if (searchText) {
-          const reviewText = card.querySelector('.review-text').textContent.toLowerCase();
-          const productName = card.querySelector('.product-details h3').textContent.toLowerCase();
-          if (!reviewText.includes(searchText) && !productName.includes(searchText)) {
-            showCard = false;
+          const reviewTextElement = card.querySelector('.review-text');
+          const productNameElement = card.querySelector('.product-details h3');
+          
+          if (reviewTextElement && productNameElement) {
+            const reviewText = reviewTextElement.textContent.toLowerCase();
+            const productName = productNameElement.textContent.toLowerCase();
+            if (!reviewText.includes(searchText) && !productName.includes(searchText)) {
+              showCard = false;
+            }
           }
         }
         
