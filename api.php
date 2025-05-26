@@ -108,13 +108,13 @@ class API
                 break;
 
             //CRUD Operations for Products. However these are just requests 
-            case 'AddProduct':
+            case 'AddProductRequest':
                 $this->handleAddProductRequest($data);
                 break;
-            case 'UpdateProduct':
+            case 'UpdateProductRequest':
                 $this->handleUpdateProductRequest($data);
                 break;
-            case 'DeleteProduct':
+            case 'DeleteProductRequest':
                 $this->handleDeleteProductRequest($data);
                 break;
 
@@ -174,7 +174,7 @@ class API
 
             // Insert into userbase
             $stmt = $this->conn->prepare("INSERT INTO userbase (password, email, api_key) VALUES (?, ?, ?)");
-            $stmt->execute([$email, $hashedPassword, $apiKey]);
+            $stmt->execute([$hashedPassword, $email, $apiKey]);
             $userID = $this->conn->lastInsertId();
 
             // Insert into user table
@@ -201,8 +201,8 @@ class API
             }
 
             // Insert into userbase
-            $stmt = $this->conn->prepare("INSERT INTO userbase (email, password, api_key, phone_number) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$email, $hashedPassword, $apiKey, $phoneNumber]);
+            $stmt = $this->conn->prepare("INSERT INTO userbase (password, email, api_key, phone_number) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$hashedPassword, $email, $apiKey, $phoneNumber]);
             $userID = $this->conn->lastInsertId();
 
             // Insert into retailer
@@ -1016,7 +1016,7 @@ class API
     //Add Product Request
     private function handleAddProductRequest($data)
     {
-        $requiredFields = ['product_name', 'description', 'brandID', 'categoryID', 'price', 'imageURL', 'retailerID'];
+        $requiredFields = ['productName', 'description', 'categoryName', 'brandName', 'price', 'imageURL', 'retailerID'];
         foreach ($requiredFields as $field) 
         {
             if (!isset($data[$field]) || $data[$field] === "") 
@@ -1026,10 +1026,11 @@ class API
         }
 
         $payload = json_encode([
+            'retailerID' => (int)$data['retailerID'],
             'product_name' => $data['product_name'],
             'description' => $data['description'],
-            'brandID' => (int)$data['brandID'],
-            'categoryID' => (int)$data['categoryID'],
+            'brandID' => $brandID = $this->conn->prepare("SELECT brandID FROM brand WHERE brand_name = ?"),
+            'categoryID' => $categoryID = $this->conn->prepare("SELECT categoryID FROM category WHERE category_name = ?"),
             'price' => (float)$data['price'],
             'imageURL' => $data['imageURL']
         ]);
