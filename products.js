@@ -38,6 +38,48 @@ const productData = [
   }
 ];
 
+// Theme management functions
+function initializeTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  const slider = themeToggle?.querySelector('.toggle-slider');
+  
+  if (!themeToggle || !slider) return;
+  
+  // Check for saved theme preference or default to light mode
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeToggle.classList.add('active');
+    slider.textContent = '🌙';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    themeToggle.classList.remove('active');
+    slider.textContent = '☀️';
+  }
+}
+
+function toggleTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  const slider = themeToggle?.querySelector('.toggle-slider');
+  
+  if (!themeToggle || !slider) return;
+  
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  
+  if (currentTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+    themeToggle.classList.remove('active');
+    slider.textContent = '☀️';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+    themeToggle.classList.add('active');
+    slider.textContent = '🌙';
+  }
+}
+
 // Initialize the application
 function initializeApp() {
   // Link product data to DOM elements
@@ -53,29 +95,52 @@ function initializeApp() {
   
   // Set up review functionality
   setupReviewFunctionality();
+  
+  // Initialize theme
+  initializeTheme();
 }
 
 // Set up all event listeners
 function setupEventListeners() {
   // Filter toggle
-  document.getElementById('toggleFilters').addEventListener('click', toggleFilters);
+  const toggleFiltersBtn = document.getElementById('toggleFilters');
+  if (toggleFiltersBtn) {
+    toggleFiltersBtn.addEventListener('click', toggleFilters);
+  }
   
   // Search functionality
-  document.getElementById('searchButton').addEventListener('click', performSearch);
-  document.getElementById('searchInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      performSearch();
-    }
-  });
+  const searchBtn = document.getElementById('searchButton');
+  const searchInput = document.getElementById('searchInput');
+  
+  if (searchBtn) {
+    searchBtn.addEventListener('click', performSearch);
+  }
+  
+  if (searchInput) {
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+  }
   
   // Sort functionality
-  document.getElementById('sortSelect').addEventListener('change', performSort);
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', performSort);
+  }
   
   // Filter checkboxes
   const filterCheckboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
   filterCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', applyFilters);
   });
+  
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
 }
 
 // Set up review functionality for each product card
@@ -114,7 +179,7 @@ function showReviewForm(card, button, input, productIndex) {
   // Create star rating HTML
   const ratingHTML = `
     <div class="rating-selector" style="margin: 10px 0; text-align: center;">
-      <p style="margin: 5px 0; font-weight: bold; color: #113d2a;">Rate this product:</p>
+      <p style="margin: 5px 0; font-weight: bold; color: var(--border-color);">Rate this product:</p>
       <div class="stars" style="font-size: 24px; margin: 10px 0;">
         <span class="star" data-rating="1" style="cursor: pointer; color: #ddd;">★</span>
         <span class="star" data-rating="2" style="cursor: pointer; color: #ddd;">★</span>
@@ -245,6 +310,8 @@ function toggleFilters() {
   const filtersSection = document.getElementById('filtersSection');
   const toggleButton = document.getElementById('toggleFilters');
   
+  if (!filtersSection || !toggleButton) return;
+  
   if (filtersSection.style.display === 'none' || filtersSection.style.display === '') {
     filtersSection.style.display = 'block';
     toggleButton.textContent = 'Hide Filters';
@@ -266,8 +333,12 @@ function getMaxPrice(product) {
 
 // Perform sorting
 function performSort() {
-  const sortOption = document.getElementById('sortSelect').value;
+  const sortSelect = document.getElementById('sortSelect');
   const container = document.querySelector('.product-container');
+  
+  if (!sortSelect || !container) return;
+  
+  const sortOption = sortSelect.value;
   
   if (!sortOption) return;
   
@@ -296,11 +367,16 @@ function performSort() {
 
 // Check if product matches category filters
 function matchesCategoryFilter(product) {
+  const categoryDairy = document.getElementById('categoryDairy');
+  const categoryBakery = document.getElementById('categoryBakery');
+  const categorySnacks = document.getElementById('categorySnacks');
+  const categoryElectronics = document.getElementById('categoryElectronics');
+  
   const categoryFilters = {
-    tinned: document.getElementById('categoryDairy').checked,
-    toiletries: document.getElementById('categoryBakery').checked,
-    cleaning: document.getElementById('categorySnacks').checked,
-    beverages: document.getElementById('categoryElectronics').checked
+    tinned: categoryDairy ? categoryDairy.checked : true,
+    toiletries: categoryBakery ? categoryBakery.checked : true,
+    cleaning: categorySnacks ? categorySnacks.checked : true,
+    beverages: categoryElectronics ? categoryElectronics.checked : true
   };
   
   return categoryFilters[product.category];
@@ -310,10 +386,14 @@ function matchesCategoryFilter(product) {
 function matchesPriceFilter(product) {
   const minPrice = getMinPrice(product);
   
+  const price0_100 = document.getElementById('price0-100');
+  const price100_500 = document.getElementById('price100-500');
+  const price500plus = document.getElementById('price500plus');
+  
   const priceFilters = {
-    range1: document.getElementById('price0-100').checked && minPrice >= 0 && minPrice <= 100,
-    range2: document.getElementById('price100-500').checked && minPrice > 100 && minPrice <= 500,
-    range3: document.getElementById('price500plus').checked && minPrice > 500
+    range1: price0_100 ? price0_100.checked && minPrice >= 0 && minPrice <= 100 : false,
+    range2: price100_500 ? price100_500.checked && minPrice > 100 && minPrice <= 500 : false,
+    range3: price500plus ? price500plus.checked && minPrice > 500 : false
   };
   
   return priceFilters.range1 || priceFilters.range2 || priceFilters.range3;
@@ -339,14 +419,18 @@ function applyFilters() {
 
 // Check if product matches current search
 function checkSearchMatch(product) {
-  const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+  const searchInput = document.getElementById('searchInput');
   
   if (!searchInput) return true;
+  
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  
+  if (!searchTerm) return true;
   
   const productName = product.name.toLowerCase();
   const productDesc = product.description.toLowerCase();
   
-  return productName.includes(searchInput) || productDesc.includes(searchInput);
+  return productName.includes(searchTerm) || productDesc.includes(searchTerm);
 }
 
 // Perform search
@@ -355,8 +439,11 @@ function performSearch() {
   applyFilters();
   
   // Show feedback
-  const searchInput = document.getElementById('searchInput').value.trim();
-  if (searchInput) {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+  
+  const searchTerm = searchInput.value.trim();
+  if (searchTerm) {
     // Count visible products
     const visibleProducts = productData.filter(product => 
       product.element && product.element.style.display !== 'none'
@@ -373,10 +460,16 @@ function performSearch() {
 // Clear all filters and search
 function clearAllFilters() {
   // Clear search input
-  document.getElementById('searchInput').value = '';
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.value = '';
+  }
   
   // Reset sort dropdown
-  document.getElementById('sortSelect').value = '';
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) {
+    sortSelect.value = '';
+  }
   
   // Check all filter checkboxes
   const filterCheckboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
@@ -455,12 +548,15 @@ function toggleReview(button) {
 // Utility function to add a reset filters button (optional)
 function addResetButton() {
   const searchBar = document.querySelector('.search-bar');
+  if (!searchBar) return;
+  
   const resetButton = document.createElement('button');
   resetButton.textContent = 'Reset All';
   resetButton.style.padding = '10px 20px';
   resetButton.style.borderRadius = '15px';
-  resetButton.style.backgroundColor = '#f0dcbd';
-  resetButton.style.border = '2px solid #113d2a';
+  resetButton.style.backgroundColor = 'var(--bg-color)';
+  resetButton.style.border = '2px solid var(--border-color)';
+  resetButton.style.color = 'var(--text-color)';
   resetButton.style.cursor = 'pointer';
   resetButton.addEventListener('click', clearAllFilters);
   
@@ -478,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(checkForNewResponses, 30000);
   
   // Mark responses as read when Reviews link is clicked
-  const reviewsLink = document.getElementById('reviewsLink');
+  const reviewsLink = document.querySelector('a[href="reviews.html"]');
   if (reviewsLink) {
     reviewsLink.addEventListener('click', function() {
       // Mark current time as last checked
