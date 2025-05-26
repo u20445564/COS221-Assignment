@@ -62,6 +62,9 @@ class API
             case 'GetAllReviewsAndResponses':
                 $this->handleGetAllReviewsAndResponses($data);
                 break;
+            case 'GetAllUserReviews':
+                $this->handleGetAllUserReviews($data);
+                break;
             case 'AddReview':
                 $this->handleAddReview($data);
                 break;
@@ -543,6 +546,29 @@ class API
         }
 
         //JSON Success Response
+        respondJSON([
+            "status" => "success",
+            "timestamp" => round(microtime(true) * 1000),
+            "data" => $reviews
+        ]);
+    }
+
+    private function handleGetAllUserReviews($data)
+    {
+        if (!isset($data['user_id'])) 
+        {
+            respondError("Missing user_id", 400);
+        }
+
+        $stmt = $this->conn->prepare("SELECT * FROM reviews WHERE user_id = ?");
+        $stmt->execute([$data['user_id']]);
+        $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$reviews) 
+        {
+            respondError("No reviews found for this user", 404);
+        }
+
         respondJSON([
             "status" => "success",
             "timestamp" => round(microtime(true) * 1000),
