@@ -1,0 +1,226 @@
+<html>
+    <title>
+        Request Page
+    </title>
+    
+    <script src="retailer_req.js" defer></script>
+    <head>
+        <style>
+            @font-face {
+                font-family: 'Porkys';
+                src:url('FONT/CalSans-Regular.ttf');
+            }
+            @font-face {
+                font-family: 'Aileron';
+                src: url('FONT/Aileron-Regular.otf');
+            }
+            .navbar {
+                background-color: rgb(17, 61, 42);
+                overflow: hidden;
+                padding: 10px 10px;
+                border-radius: 15px;
+                justify-content: space-between;
+                display: flex;
+                width: 1260px;
+                margin-right: 10px;
+                
+            }
+            .nav-right a {
+                color: white;
+                text-decoration: none;
+                padding: 14px 20px;
+                display: inline-block;
+                font-family: "Porkys", sans-serif;
+                font-size: 25px;
+            }
+            .nav-right a:hover {
+                background-color: #507541;
+                border-radius: 15px;
+                
+            }
+            
+            
+
+            body{
+                background-color: #f0dcbd;
+                margin: 20px;
+            }
+
+            .text{
+                color: white;
+                font-size: 45px;
+                align-content: center;
+                font-family: "Porkys", sans-serif; 
+                text-align: center;
+            }
+
+            .search-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding: 0 20px;
+                box-sizing: border-box;
+            }
+
+            .add {
+                width: 200px;
+                height: 40px;
+                margin-inline: 5px;
+                background-color: #da754d;
+                font-family: 'Porkys', sans-serif;
+                border-radius: 15px;
+                font-size: 16px;
+                transition: transform 0.2s ease, background-color 0.3s ease;
+                color: black;
+                margin-left: auto;
+                cursor: pointer;
+                border: 2px solid #113d2a; /* Add this line */
+            }
+
+            .add:hover{
+                transform: scale(1.1);
+            }
+
+            p{
+                color: rgb(17, 61, 42);
+                font-family: "Porkys", sans-serif;
+                font-size: 40px;
+                font-weight: lighter;
+            }
+            
+            .requests {
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .request-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                border-bottom: 1px solid #eee;
+                font-family: 'Porkys', sans-serif;
+                border: 2px solid #113d2a; 
+                border-radius: 10px;
+                background-color: white;
+                margin-bottom: 10px;
+            }
+            
+            .request-info {
+                display: flex;
+                flex-direction: column;
+                font-family: 'Porkys', sans-serif;
+                font-weight: lighter;
+            }
+            
+            .request-number {
+                font-size: 20px;
+                font-weight: bold;
+                color: rgb(17, 61, 42);
+                margin-bottom: 10px;
+                font-family: 'Porkys', sans-serif;
+                font-weight: lighter;
+            }
+            
+            .request-date {
+                font-size: 14px;
+                color: #777;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .request-status {
+                display: flex;
+                align-items: center;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .status {
+                padding: 5px 10px;
+                border-radius: 15px;
+                margin-right: 15px;
+                font-size: 14px;
+                font-family: 'Porkys', sans-serif;
+
+            }
+            
+            .pending {
+                background-color: #FFD700;
+                color: #333;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .sufficient {
+                background-color: #90EE90;
+                color: #333;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .progress {
+                background-color: #ADD8E6;
+                color: #333;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .request-actions button {
+                margin-left: 10px;
+                padding: 5px 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-family: 'Porkys', sans-serif;
+                transition: background-color 0.3s;
+            }
+            
+            .view-btn {
+                background-color: #507541;
+                font-family: 'Porkys', sans-serif;
+                color: white;
+            }
+            
+            .edit-btn {
+                background-color: #da754d;
+                color: white;                
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .delete-btn {
+                background-color: #ff4444;
+                color: white;
+                font-family: 'Porkys', sans-serif;
+            }
+            
+            .request-actions button:hover {
+                opacity: 0.8;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="navbar">
+            <div class = "text">
+                CompareIt!
+            </div>
+            <div class = "nav-right">
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/deals.html">Best Deals</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/index.html">Products</a>
+                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/cart.html">Cart</a>
+            </div>
+        </div>
+
+        
+
+        <div class="search-container">
+            
+            <p>Past Requests</p>
+            <button type="button" class="add">Create New Request!</button>
+        </div>
+
+        <div class = "requests">
+        </div>
+        
+    </body>
+
+
+</html>
