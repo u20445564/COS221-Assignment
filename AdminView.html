@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare It! - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Light mode colors */
+            --bg-color: #f0dcbd;
+            --card-bg: white;
+            --text-primary: #113d2a;
+            --text-secondary: #28805a;
+            --nav-bg: rgb(17, 61, 42);
+            --accent-color: #5bb890;
+            --border-color: #113d2a;
+            --modal-bg: #fefefe;
+            --input-bg: white;
+            --button-bg: #f0dcbd;
+        }
+
+        /* Apply custom colors */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--modal-bg);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+        }
+
+        input, select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        button, .btn {
+            background-color: var(--button-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-white text-2xl font-bold">Compare It!</a>
+            <div class="space-x-4">
+                <a href="#products" class="text-white hover:text-gray-200">Products</a>
+                <a href="#requests" class="text-white hover:text-gray-200">Requests</a>
+                <a href="#reviews" class="text-white hover:text-gray-200">Reviews</a>
+                <a href="#" class="text-white hover:text-gray-200">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        <!-- Products Section -->
+        <section id="products" class="mb-12">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Available Products</h2>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <!-- Sorting -->
+                <div class="flex-1">
+                    <label for="sort" class="block text-sm font-medium">Sort By</label>
+                    <select id="sort" class="w-full p-2 rounded">
+                        <option value="productName">Name A-Z</option>
+                        <option value="productName DESC">Name Z-A</option>
+                        <option value="lowestPrice_to_highestPrice">Price: Low to High</option>
+                        <option value="highestPrice_to_lowestPrice">Price: High to Low</option>
+                    </select>
+                </div>
+                <!-- Filtering by Retailer -->
+                <div class="flex-1">
+                    <label for="retailerFilter" class="block text-sm font-medium">Filter by Retailer</label>
+                    <select id="retailerFilter" class="w-full p-2 rounded">
+                        <option value="">All Retailers</option>
+                        <option value="Retailer1">Retailer1</option>
+                        <option value="Retailer2">Retailer2</option>
+                    </select>
+                </div>
+                <!-- Search -->
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium">Search</label>
+                    <input type="text" id="search" class="w-full p-2 rounded" placeholder="Search products...">
+                </div>
+            </div>
+            <div id="productsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-4 rounded shadow">
+                    <img src="https://via.placeholder.com/150" alt="Product Name" class="w-full h-48 object-cover rounded mb-4">
+                    <h3 class="text-lg font-bold">Product Name</h3>
+                    <p class="text-secondary">Description of the product goes here.</p>
+                    <p class="text-sm text-secondary">Specifications: Example specs</p>
+                    <div class="mt-2">
+                        <p class="font-semibold">Prices:</p>
+                        <ul>
+                            <li>Retailer1: R100</li>
+                            <li>Retailer2: R120</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="noProducts" class="text-center text-secondary">
+                No products found matching your search criteria.
+            </div>
+        </section>
+
+        <!-- Requests Section -->
+        <section id="requests" class="mb-12">
+            <h2 class="text-2xl font-bold mb-4">Pending Requests</h2>
+            <div id="requestsList" class="space-y-4">
+                <div class="card p-4 rounded shadow">
+                    <p><strong>Request ID:</strong> 1</p>
+                    <p><strong>Code:</strong> ADD_001</p>
+                    <p><strong>Status:</strong> pending</p>
+                    <p><strong>Payload:</strong> {"productName":"Example","retailerID":1}</p>
+                    <button class="btn px-4 py-2 rounded mt-2">Decline</button>
+                </div>
+            </div>
+            <div id="noRequests" class="text-center text-secondary">
+                No pending requests found.
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews">
+            <h2 class="text-2xl font-bold mb-4">All Reviews</h2>
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="flex-1">
+                    <label for="reviewRetailerFilter" class="block text-sm font-medium">Filter by Retailer</label>
+                    <select id="reviewRetailerFilter" class="w-full p-2 rounded">
+                        <option value="">All Retailers</option>
+                        <option value="Retailer1">Retailer1</option>
+                        <option value="Retailer2">Retailer2</option>
+                    </select>
+                </div>
+            </div>
+            <div id="reviewsList" class="space-y-4">
+                <div class="card p-4 rounded shadow">
+                    <p><strong>Product ID:</strong> 1</p>
+                    <p><strong>User ID:</strong> 1</p>
+                    <p><strong>Rating:</strong> 4/5</p>
+                    <p><strong>Comment:</strong> Great product!</p>
+                    <p><strong>Retailer Response:</strong> Thank you! (by Retailer ID: 1)</p>
+                </div>
+            </div>
+            <div id="noReviews" class="text-center text-secondary">
+                No reviews found.
+            </div>
+        </section>
+    </div>
+
+    <!-- Decline Request Modal -->
+    <div id="declineModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2 class="text-xl font-bold mb-4">Confirm Decline Request</h2>
+            <p>Are you sure you want to decline this request?</p>
+            <input type="hidden" id="declineRequestID">
+            <div class="flex justify-end gap-4 mt-4">
+                <button id="cancelDecline" class="btn px-4 py-2 rounded">Cancel</button>
+                <button id="confirmDecline" class="btn px-4 py-2 rounded">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-12">
+        <div class="container mx-auto text-center">
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Compare It!</h3>
+                <p>Your trusted price comparison platform</p>
+                <p>Compare prices across major South African retailers</p>
+            </div>
+            <div class="flex justify-center items-center mb-4">
+                <button id="darkModeToggle" class="btn p-2 rounded-full">
+                    <span class="dark-mode-icon">🌙 Dark Mode</span>
+                    <span class="light-mode-icon hidden">☀</span>
+                </button>
+            </div>
+            <p>© 2025 Compare It! All rights reserved. | Helping you find the best deals.</p>
+        </div>
+    </footer>
+</body>
+</html>
