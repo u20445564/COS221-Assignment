@@ -1,497 +1,467 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-    <title>
-        Request Page
-    </title>
-    <head>
-        <style>
-            @font-face {
-                font-family: 'Porkys';
-                src:url('FONT/CalSans-Regular.ttf');
-            }
-            @font-face {
-                font-family: 'Aileron';
-                src: url('FONT/Aileron-Regular.otf');
-            }
-            
-            /* Light mode variables */
-            :root[data-theme="light"] {
-                --bg-color: #f0dcbd;
-                --navbar-bg: rgb(17, 61, 42);
-                --text-primary: rgb(17, 61, 42);
-                --text-white: white;
-                --request-bg: white;
-                --border-color: #eee;
-                --date-color: #777;
-                --button-orange: #da754d;
-                --button-green: #507541;
-                --button-red: #ff4444;
-            }
-            
-            /* Dark mode variables */
-            :root[data-theme="dark"] {
-                --bg-color: #1a1a1a;
-                --navbar-bg: #2d2d2d;
-                --text-primary: #e0e0e0;
-                --text-white: #f0f0f0;
-                --request-bg: #333333;
-                --border-color: #555;
-                --date-color: #aaa;
-                --button-orange: #e8854f;
-                --button-green: #5a8549;
-                --button-red: #ff5555;
-            }
-            
-            .navbar {
-                background-color: var(--navbar-bg);
-                overflow: hidden;
-                padding: 10px 10px;
-                border-radius: 15px;
-                justify-content: space-between;
-                display: flex;
-                transition: background-color 0.3s ease;
-            }
-            .nav-right a {
-                color: var(--text-white);
-                text-decoration: none;
-                padding: 14px 20px;
-                display: inline-block;
-                font-family: "Porkys", sans-serif;
-                font-size: 25px;
-                transition: background-color 0.3s ease;
-            }
-            .nav-right a:hover {
-                background-color: var(--button-green);
-                border-radius: 15px;
-            }
+<head>
+  <meta charset="UTF-8">
+  <title>Requests</title>
+  <style>
+    @font-face {
+        font-family: 'Porkys';
+        src:url('FONT/CalSans-Regular.ttf');
+    }
+    @font-face {
+        font-family: 'Aileron';
+        src: url('FONT/Aileron-Regular.otf');
+    }
+    
+    :root {
+      /* Light mode colors */
+      --bg-color: #f0dcbd;
+      --card-bg: white;
+      --text-primary: #113d2a;
+      --text-secondary: #28805a;
+      --nav-bg: rgb(17, 61, 42);
+      --accent-color: #5bb890;
+      --border-color: #113d2a;
+      --modal-bg: #fefefe;
+      --input-bg: white;
+      --button-bg: #f0dcbd;
+      --button-orange: #da754d;
+      --button-green: #507541;
+      --button-red: #ff4444;
+      --date-color: #777;
+    }
+    
+    [data-theme="dark"] {
+      /* Dark mode colors */
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-primary: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --nav-bg: #0f2419;
+      --accent-color: #4a9570;
+      --border-color: #444;
+      --modal-bg: #2d2d2d;
+      --input-bg: #3a3a3a;
+      --button-bg: #3a3a3a;
+      --button-orange: #e8854f;
+      --button-green: #5a8549;
+      --button-red: #ff5555;
+      --date-color: #aaa;
+    }
+    
+    body {
+      font-family: 'Aileron', Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-            body{
-                background-color: var(--bg-color);
-                margin: 20px;
-                transition: background-color 0.3s ease;
-            }
+    nav {
+      background-color: var(--nav-bg);
+      padding: 10px 10px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 15px;
+      margin: 10px;
+    }
 
-            .text{
-                color: var(--text-white);
-                font-size: 45px;
-                align-content: center;
-                font-family: "Porkys", sans-serif; 
-            }
+    nav .text {
+      color: white;
+      font-size: 45px;
+      font-family: "Porkys", sans-serif;
+    }
 
-            .search-container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-                padding: 0 20px;
-                box-sizing: border-box;
-            }
+    nav .nav-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-            .add{
-                width: 200px;
-                height: 40px;
-                margin-inline: 5px;
-                background-color: var(--button-orange);
-                font-family: 'Porkys', sans-serif;
-                border-radius: 15px;
-                font-size: 16px;
-                transition: transform 0.2s ease, background-color 0.3s ease;
-                color: black;
-                margin-left: auto;
-                border: none;
-                cursor: pointer;
-            }
+    nav .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-family: "Porkys", sans-serif;
+      font-size: 25px;
+    }
 
-            .add:hover{
-                transform: scale(1.1);
-            }
+    nav .nav-links a:hover {
+      background-color: #507541;
+      border-radius: 15px;
+    }
+    nav .logout-btn {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-family: "Porkys", sans-serif;
+      font-size: 25px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-            p{
-                color: var(--text-primary);
-                font-family: "Porkys", sans-serif;
-                font-size: 40px;
-                font-weight: lighter;
-                transition: color 0.3s ease;
-            }
-            
-            .requests {
-                border-radius: 10px;
-                padding: 20px;
-                margin-bottom: 20px;
-            }
-            
-            .request-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                padding: 15px;
-                border-bottom: 1px solid var(--border-color);
-                font-family: 'Porkys', sans-serif;
-                border-radius: 10px;
-                background-color: var(--request-bg);
-                margin-bottom: 10px;
-                transition: background-color 0.3s ease, border-color 0.3s ease;
-            }
-            
-            .request-info {
-                display: flex;
-                flex-direction: column;
-                font-family: 'Porkys', sans-serif;
-                font-weight: lighter;
-                flex: 1;
-            }
-            
-            .request-number {
-                font-size: 20px;
-                font-weight: bold;
-                color: var(--text-primary);
-                margin-bottom: 10px;
-                font-family: 'Porkys', sans-serif;
-                font-weight: lighter;
-                transition: color 0.3s ease;
-            }
-            
-            .request-date {
-                font-size: 14px;
-                color: var(--date-color);
-                font-family: 'Porkys', sans-serif;
-                margin-bottom: 8px;
-                transition: color 0.3s ease;
-            }
+    nav .logout-btn:hover {
+      background-color: #507541;
+      border-radius: 15px;
+    }
 
-            .request-description {
-                font-size: 16px;
-                color: var(--text-primary);
-                font-family: 'Porkys', sans-serif;
-                font-weight: lighter;
-                margin-bottom: 8px;
-                line-height: 1.4;
-                transition: color 0.3s ease;
-            }
+    .controls {
+      margin: 30px 20px;
+      display: flex;
+      gap: 10px;
+    }
 
-            .request-type {
-                font-size: 14px;
-                color: var(--button-orange);
-                font-family: 'Porkys', sans-serif;
-                font-weight: bold;
-                margin-bottom: 5px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                transition: color 0.3s ease;
-            }
-            
-            .request-status {
-                display: flex;
-                align-items: center;
-                font-family: 'Porkys', sans-serif;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .status {
-                padding: 5px 10px;
-                border-radius: 15px;
-                margin-right: 15px;
-                font-size: 14px;
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .pending {
-                background-color: #FFD700;
-                color: #333;
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .sufficient {
-                background-color: #90EE90;
-                color: #333;
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .progress {
-                background-color: #ADD8E6;
-                color: #333;
-                font-family: 'Porkys', sans-serif;
-            }
+    .controls input[type="text"] {
+      padding: 0.5rem;
+      flex-grow: 1;
+      border-radius: 15px;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls select {
+      border-radius: 15px;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      padding: 0.5rem;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls button {
+      border-radius: 15px;
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    .controls button:hover {
+      background-color: var(--accent-color);
+      transform: scale(1.1);
+    }
 
-            .rejected {
-                background-color: #ffb3b3;
-                color: #333;
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .request-actions {
-                display: flex;
-                gap: 8px;
-            }
+    .add-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      color: white;
+      background-color: var(--nav-bg);
+      border-radius: 15px;
+      margin: 1rem 2rem 0 2rem;
+    }
+    
+    .add-section h2 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 30px;
+      font-weight: lighter;
+    }
+    
+    .add-section button {
+      padding: 10px 20px;
+      border-radius: 15px;
+      background-color: var(--button-orange);
+      font-family: 'Porkys', sans-serif;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      color: black;
+    }
+    
+    .add-section button:hover {
+      transform: scale(1.1);
+    }
 
-            .request-actions button {
-                padding: 5px 10px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-family: 'Porkys', sans-serif;
-                transition: background-color 0.3s;
-                font-size: 12px;
-            }
-            
-            .view-btn {
-                background-color: var(--button-green);
-                font-family: 'Porkys', sans-serif;
-                color: white;
-            }
-            
-            .edit-btn {
-                background-color: var(--button-orange);
-                color: white;                
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .delete-btn {
-                background-color: var(--button-red);
-                color: white;
-                font-family: 'Porkys', sans-serif;
-            }
-            
-            .request-actions button:hover {
-                opacity: 0.8;
-            }
+    .requests {
+      margin: 2rem;
+      padding: 20px;
+    }
+    
+    .request-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 15px;
+      background-color: var(--card-bg);
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
 
-            /* Theme toggle styles */
-            footer {
-                background-color: var(--navbar-bg);
-                color: var(--text-white);
-                padding: 40px 20px 20px;
-                margin-top: 50px;
-                border-radius: 15px;
-                transition: background-color 0.3s ease;
-            }
+    .request-item.hidden {
+      display: none;
+    }
+    
+    .request-info {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Porkys', sans-serif;
+      font-weight: lighter;
+      flex: 1;
+    }
+    
+    .request-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      font-family: 'Porkys', sans-serif;
+      font-weight: lighter;
+      transition: color 0.3s ease;
+    }
+    
+    .request-date {
+      font-size: 14px;
+      color: var(--date-color);
+      font-family: 'Porkys', sans-serif;
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
 
-            .footer-content {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                max-width: 1200px;
-                margin: 0 auto;
-                flex-wrap: wrap;
-                gap: 20px;
-            }
+    .request-description {
+      font-size: 16px;
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+      font-weight: lighter;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      transition: color 0.3s ease;
+    }
 
-            .footer-left h3 {
-                font-family: 'Porkys', sans-serif;
-                font-size: 28px;
-                margin: 0 0 10px 0;
-                color: var(--text-white);
-            }
+    .request-type {
+      font-size: 14px;
+      color: var(--button-orange);
+      font-family: 'Porkys', sans-serif;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease;
+    }
+    
+    .request-status {
+      display: flex;
+      align-items: center;
+      font-family: 'Porkys', sans-serif;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      margin-right: 15px;
+      font-size: 14px;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .pending {
+      background-color: #FFD700;
+      color: #333;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .approved {
+      background-color:rgb(3, 134, 3);
+      color: white;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .in-progress {
+      background-color: #ADD8E6;
+      color: #333;
+      font-family: 'Porkys', sans-serif;
+    }
 
-            .footer-left p {
-                font-family: 'Porkys', sans-serif;
-                font-size: 16px;
-                margin: 5px 0;
-                color: var(--text-white);
-                opacity: 0.9;
-            }
+    .rejected {
+      background-color:rgb(247, 13, 13);
+      color: white;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .request-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-            .copyright {
-                text-align: center;
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 1px solid rgba(255, 255, 255, 0.2);
-            }
+    .request-actions button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      font-size: 12px;
+    }
+    
+    .view-btn {
+      background-color: var(--button-green);
+      font-family: 'Porkys', sans-serif;
+      color: white;
+    }
+    
+    .edit-btn {
+      background-color: var(--button-orange);
+      color: white;                
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .delete-btn {
+      background-color: var(--button-red);
+      color: white;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .request-actions button:hover {
+      transform: scale(1.1);
+    }
 
-            .copyright p {
-                font-family: 'Porkys', sans-serif;
-                font-size: 14px;
-                color: var(--text-white);
-                opacity: 0.8;
-                margin: 0;
-            }
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-family: "Porkys", sans-serif;
+      font-size: 18px;
+      display: none;
+    }
 
-            .theme-toggle {
-                position: static;
-                top: auto;
-                right: auto;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                background-color: rgba(255, 255, 255, 0.1);
-                padding: 10px 15px;
-                border-radius: 25px;
-                box-shadow: none;
-                transition: background-color 0.3s ease;
-                z-index: 1000;
-            }
+    /* Footer Styles */
+    footer {
+      background-color: var(--nav-bg);
+      color: white;
+      padding: 2rem 0 1rem;
+      margin-top: 3rem;
+    }
 
-            .theme-toggle label {
-                color: var(--text-white);
-                font-family: 'Porkys', sans-serif;
-                font-size: 14px;
-                transition: color 0.3s ease;
-            }
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
 
-            .toggle-switch {
-                width: 50px;
-                height: 25px;
-                background-color: #ccc;
-                border-radius: 25px;
-                position: relative;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
+    .footer-left h3 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+    }
 
-            .toggle-switch.active {
-                background-color: var(--button-green);
-            }
+    .footer-left p {
+      color: #b0b0b0;
+      margin: 5px 0;
+      font-family: "Aileron", sans-serif;
+    }
 
-            .toggle-slider {
-                width: 21px;
-                height: 21px;
-                background-color: white;
-                border-radius: 50%;
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                transition: transform 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 12px;
-            }
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
 
-            .toggle-switch.active .toggle-slider {
-                transform: translateX(25px);
-            }
+    .theme-toggle label {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 16px;
+    }
 
-            /* Dark mode specific adjustments */
-            [data-theme="dark"] footer {
-                background-color: #2d2d2d;
-            }
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background-color: #333;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: 2px solid #555;
+    }
 
-            [data-theme="dark"] .theme-toggle {
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-        </style>
-    </head>
-    <body>
-        <div class="navbar">
-            <div class = "text">
-                Request
-            </div>
-            <div class = "nav-right">
-                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/deals.html">Best Deals</a>
-                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/index.html">Products</a>
-                <a href="https://wheatley.cs.up.ac.za/u24827313/COS216/PA2/cart.html">Cart</a>
-            </div>
-        </div>
+    .toggle-switch.active {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
 
-        <div class="search-container">
-            <p>Past Requests</p>
-            <button type="button" class="add">Create New Request!</button>
-        </div>
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
 
-        <div class = "requests">
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1001</span>
-                    <span class="request-date">Created on: 2025-05-15</span>
-                    <span class="request-type">Product Out of Stock Request</span>
-                    <span class="request-description">Request to restock KOO Baked Beans in Tomato Sauce - 410g cans. Current inventory: 0 units. Last sold: 2023-05-12.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status sufficient">approved</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1002</span>
-                    <span class="request-date">Created on: 2025-05-16</span>
-                    <span class="request-type">Add New Product Request</span>
-                    <span class="request-description">Add Woolworths Premium Chocolate Cake - 500g to bakery section. Customer requests for premium cakes increasing. Suggested retail price: R89.99. Supplier: Woolworths Food Distribution.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status pending">pending</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div>
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(30px);
+    }
 
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1003</span>
-                    <span class="request-date">Created on: 2025-05-17</span>
-                    <span class="request-type">Edit Product Request</span>
-                    <span class="request-description">Update Albany Superior White Bread - 700g pricing from R16.99 to R14.99 due to supplier discount. Also update expiry date tracking system and implement fresh bread delivery schedule for morning stock.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status progress">in progress</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div>
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #444;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
 
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1004</span>
-                    <span class="request-date">Created on: 2025-05-18</span>
-                    <span class="request-type">Product Out of Stock Request</span>
-                    <span class="request-description">Emergency restock request for KOO Mixed Vegetables - 410g cans. Completely sold out after weekend promotion. 30+ customers asking for availability. Supplier can deliver within 2 business days.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status sufficient">approved</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div>
+  <nav>
+    <div class="text">Compare It!</div>
+    <div class="nav-links">
+      <a href="RetailersView.html">Products</a>
+      <a href="requestsTemplate.html">Requests</a>
+      <a href="reviews.html">Reviews</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
 
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1005</span>
-                    <span class="request-date">Created on: 2025-05-19</span>
-                    <span class="request-type">Add New Product Request</span>
-                    <span class="request-description">Request to add Woolworths Red Velvet Cupcakes - 6 pack to bakery section. Popular item missing from our sweet treats. Estimated weekly sales: 15-20 packs. Cost: R45.99, Suggested retail: R54.99.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status rejected">rejected</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div>
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search requests..." oninput="searchRequests()">
+    <select id="sortSelect" onchange="sortRequests()">
+      <option value="">Sort By</option>
+      <option value="date">Date (Newest First)</option>
+      <option value="dateOld">Date (Oldest First)</option>
+      <option value="status">Status</option>
+      <option value="type">Request Type</option>
+      <option value="requestNumber">Request Number</option>
+    </select>
+    <button onclick="searchRequests()">Search</button>
+  </div>
 
-            <div class="request-item">
-                <div class="request-info">
-                    <span class="request-number">Request #1006</span>
-                    <span class="request-date">Created on: 2025-05-20</span>
-                    <span class="request-type">Edit Product Request</span>
-                    <span class="request-description">Remove Sasko Brown Bread - 600g from active catalog due to low sales and new wholegrain range availability. Move remaining 8 loaves to discount section with 30% off to clear before expiry.</span>
-                </div>
-                <div class="request-status">
-                    <span class="status pending">pending</span>
-                    <div class="request-actions">
-                        <button class="view-btn">View</button>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            </div> 
- <footer>
+  <div class="requests" id="requestsContainer">
+    <!-- Requests will be dynamically rendered here -->
+  </div>
+
+  <div class="no-results" id="noResults">
+    No requests found matching your search criteria.
+  </div>
+
+  <footer>
     <div class="footer-content">
       <div class="footer-left">
         <h3>Compare It!</h3>
@@ -501,8 +471,8 @@
       
       <div class="theme-toggle">
         <label for="themeToggle">🌙 Dark Mode</label>
-        <div class="toggle-switch active" id="themeToggle">
-          <div class="toggle-slider">🌙</div>
+        <div class="toggle-switch" id="themeToggle">
+          <div class="toggle-slider">☀️</div>
         </div>
       </div>
     </div>
@@ -512,63 +482,231 @@
     </div>
   </footer>
 
+  <script>
+    // Sample requests data
+    const requests = [
+      {
+        id: 1001,
+        date: '2025-05-15',
+        type: 'Product Out of Stock Request',
+        description: 'Request to restock KOO Baked Beans in Tomato Sauce - 410g cans. Current inventory: 0 units. Last sold: 2023-05-12.',
+        status: 'approved'
+      },
+      {
+        id: 1002,
+        date: '2025-05-16',
+        type: 'Add New Product Request',
+        description: 'Add Woolworths Premium Chocolate Cake - 500g to bakery section. Customer requests for premium cakes increasing. Suggested retail price: R89.99. Supplier: Woolworths Food Distribution.',
+        status: 'pending'
+      },
+      {
+        id: 1003,
+        date: '2025-05-17',
+        type: 'Edit Product Request',
+        description: 'Update Albany Superior White Bread - 700g pricing from R16.99 to R14.99 due to supplier discount. Also update expiry date tracking system and implement fresh bread delivery schedule for morning stock.',
+        status: 'in-progress'
+      },
+      {
+        id: 1004,
+        date: '2025-05-18',
+        type: 'Product Out of Stock Request',
+        description: 'Emergency restock request for KOO Mixed Vegetables - 410g cans. Completely sold out after weekend promotion. 30+ customers asking for availability. Supplier can deliver within 2 business days.',
+        status: 'approved'
+      },
+      {
+        id: 1005,
+        date: '2025-05-19',
+        type: 'Add New Product Request',
+        description: 'Request to add Woolworths Red Velvet Cupcakes - 6 pack to bakery section. Popular item missing from our sweet treats. Estimated weekly sales: 15-20 packs. Cost: R45.99, Suggested retail: R54.99.',
+        status: 'rejected'
+      },
+      {
+        id: 1006,
+        date: '2025-05-20',
+        type: 'Edit Product Request',
+        description: 'Remove Sasko Brown Bread - 600g from active catalog due to low sales and new wholegrain range availability. Move remaining 8 loaves to discount section with 30% off to clear before expiry.',
+        status: 'pending'
+      }
+    ];
 
-        <script>
-            function initializeTheme() {
-                const themeToggle = document.getElementById('themeToggle');
-                const slider = themeToggle?.querySelector('.toggle-slider');
-                
-                if (!themeToggle || !slider) return;
-                
-                const savedTheme = getThemePreference() || 'light';
-                
-                if (savedTheme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    themeToggle.classList.add('active');
-                    slider.textContent = '🌙';
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    themeToggle.classList.remove('active');
-                    slider.textContent = '☀️';
-                }
-            }
+    let filteredRequests = [...requests];
 
-            function getThemePreference() {
-                return 'light';
-            }
+    function logout() {
+        window.location.href = 'http://localhost/MyPart/LoginRegisterAboutUs.php';
+    }
 
-            function setThemePreference(theme) {
-                window.currentTheme = theme;
-            }
+    function renderRequests(requestsToRender = filteredRequests) {
+      const container = document.getElementById('requestsContainer');
+      const noResults = document.getElementById('noResults');
+      
+      container.innerHTML = '';
+      
+      if (requestsToRender.length === 0) {
+        noResults.style.display = 'block';
+        return;
+      } else {
+        noResults.style.display = 'none';
+      }
 
-            function toggleTheme() {
-                const themeToggle = document.getElementById('themeToggle');
-                const slider = themeToggle?.querySelector('.toggle-slider');
-                
-                if (!themeToggle || !slider) return;
-                
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                
-                if (currentTheme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    setThemePreference('light');
-                    themeToggle.classList.remove('active');
-                    slider.textContent = '☀️';
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    setThemePreference('dark');
-                    themeToggle.classList.add('active');
-                    slider.textContent = '🌙';
-                }
-            }
+      requestsToRender.forEach(request => {
+        const requestElement = document.createElement('div');
+        requestElement.className = 'request-item';
+        requestElement.innerHTML = `
+          <div class="request-info">
+            <span class="request-number">Request #${request.id}</span>
+            <span class="request-date">Created on: ${request.date}</span>
+            <span class="request-type">${request.type}</span>
+            <span class="request-description">${request.description}</span>
+          </div>
+          <div class="request-status">
+            <span class="status ${request.status.replace(' ', '-')}">${request.status}</span>
+            <div class="request-actions">
+              <button class="view-btn" onclick="viewRequest(${request.id})">View</button>
+              <button class="delete-btn" onclick="deleteRequest(${request.id})">Delete</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(requestElement);
+      });
+    }
 
-            // Add event listener and initialize
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    function searchRequests() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (searchTerm === '') {
+        filteredRequests = [...requests];
+      } else {
+        filteredRequests = requests.filter(request => 
+          request.id.toString().includes(searchTerm) ||
+          request.type.toLowerCase().includes(searchTerm) ||
+          request.description.toLowerCase().includes(searchTerm) ||
+          request.status.toLowerCase().includes(searchTerm) ||
+          request.date.includes(searchTerm)
+        );
+      }
+      
+      // Apply current sort after filtering
+      const currentSort = document.getElementById('sortSelect').value;
+      if (currentSort) {
+        applySorting(currentSort);
+      } else {
+        renderRequests();
+      }
+    }
 
-            // Initialize theme on load
-            window.addEventListener('DOMContentLoaded', () => {
-                initializeTheme();
-            });
-        </script>
-    </body>
+    function sortRequests() {
+      const sortBy = document.getElementById('sortSelect').value;
+      applySorting(sortBy);
+    }
+
+    function applySorting(sortBy) {
+      let sortedRequests = [...filteredRequests];
+      
+      switch(sortBy) {
+        case 'date':
+          sortedRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case 'dateOld':
+          sortedRequests.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case 'status':
+          sortedRequests.sort((a, b) => a.status.localeCompare(b.status));
+          break;
+        case 'type':
+          sortedRequests.sort((a, b) => a.type.localeCompare(b.type));
+          break;
+        case 'requestNumber':
+          sortedRequests.sort((a, b) => a.id - b.id);
+          break;
+        default:
+          // No sorting applied
+          break;
+      }
+      
+      renderRequests(sortedRequests);
+    }
+
+    function viewRequest(id) {
+      const request = requests.find(r => r.id === id);
+      if (request) {
+        alert(`Viewing Request #${request.id}\n\nType: ${request.type}\nStatus: ${request.status}\nDate: ${request.date}\n\nDescription: ${request.description}`);
+      }
+    }
+
+    function deleteRequest(id) {
+      if (confirm(`Are you sure you want to delete Request #${id}?`)) {
+        const index = requests.findIndex(r => r.id === id);
+        if (index > -1) {
+          requests.splice(index, 1);
+          searchRequests(); // Refresh the display
+          alert(`Request #${id} has been deleted successfully.`);
+        }
+      }
+    }
+
+    function initializeTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const savedTheme = getThemePreference() || 'light';
+      
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      }
+    }
+
+    function getThemePreference() {
+      return 'light';
+    }
+
+    function setThemePreference(theme) {
+      window.currentTheme = theme;
+    }
+
+    function toggleTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        setThemePreference('light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setThemePreference('dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      }
+    }
+
+    function createNewRequest() {
+      alert('Create New Request functionality would open a modal or redirect to a form page');
+    }
+
+    // Real-time search as user types
+    document.getElementById('searchInput').addEventListener('input', searchRequests);
+
+    // Add event listener and initialize
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+    // Initialize the page
+    window.addEventListener('DOMContentLoaded', () => {
+      initializeTheme();
+      renderRequests(); // Initial render of requests
+    });
+  </script>
+</body>
 </html>
