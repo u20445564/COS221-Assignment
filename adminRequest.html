@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Request Management</title>
+  <style>
+    @font-face {
+        font-family: 'Porkys';
+        src:url('FONT/CalSans-Regular.ttf');
+    }
+    @font-face {
+        font-family: 'Aileron';
+        src: url('FONT/Aileron-Regular.otf');
+    }
+    
+    :root {
+      /* Light mode colors */
+      --bg-color: #f0dcbd;
+      --card-bg: white;
+      --text-primary: #113d2a;
+      --text-secondary: #28805a;
+      --nav-bg: rgb(17, 61, 42);
+      --accent-color: #5bb890;
+      --border-color: #113d2a;
+      --modal-bg: #fefefe;
+      --input-bg: white;
+      --button-bg: #f0dcbd;
+      --button-orange: #da754d;
+      --button-green: #507541;
+      --button-red: #ff4444;
+      --button-blue: #3b82f6;
+      --date-color: #777;
+      --admin-primary: #4c1d95;
+      --admin-secondary: #7c3aed;
+    }
+    
+    [data-theme="dark"] {
+      /* Dark mode colors */
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-primary: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --nav-bg: #0f2419;
+      --accent-color: #4a9570;
+      --border-color: #444;
+      --modal-bg: #2d2d2d;
+      --input-bg: #3a3a3a;
+      --button-bg: #3a3a3a;
+      --button-orange: #e8854f;
+      --button-green: #5a8549;
+      --button-red: #ff5555;
+      --button-blue: #60a5fa;
+      --date-color: #aaa;
+      --admin-primary: #8b5cf6;
+      --admin-secondary: #a78bfa;
+    }
+    
+    body {
+      font-family: 'Aileron', Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    nav {
+      background-color: var(--nav-bg);
+      padding: 10px 10px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    nav .text {
+      color: white;
+      font-size: 45px;
+      font-family: "Porkys", sans-serif;
+    }
+
+    nav .nav-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    nav .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-family: "Porkys", sans-serif;
+      font-size: 25px;
+    }
+
+    nav .nav-links a:hover {
+      background-color: #507541;
+      border-radius: 15px;
+    }
+
+    nav .logout-btn {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-family: "Porkys", sans-serif;
+      font-size: 25px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    nav .logout-btn:hover {
+      background-color: #507541;
+      border-radius: 15px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+      color: white;
+      border-radius: 15px;
+      margin: 1rem 2rem 0 2rem;
+    }
+    
+    .admin-header h2 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 30px;
+      font-weight: lighter;
+      margin: 0;
+    }
+
+    .admin-badge {
+      background-color: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-family: "Porkys", sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .controls {
+      margin: 30px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .controls input[type="text"] {
+      padding: 0.5rem;
+      flex-grow: 1;
+      border-radius: 15px;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls select {
+      border-radius: 15px;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      padding: 0.5rem;
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .controls button {
+      border-radius: 15px;
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    .controls button:hover {
+      background-color: var(--accent-color);
+      transform: scale(1.1);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      margin: 20px;
+      padding: 0 20px;
+    }
+
+    .stat-item {
+      background-color: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      text-align: center;
+      flex: 1;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-family: 'Porkys', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .requests {
+      margin: 2rem;
+      padding: 20px;
+    }
+    
+    .request-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 15px;
+      background-color: var(--card-bg);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .request-item.hidden {
+      display: none;
+    }
+
+    .request-item.priority {
+      border-color: var(--button-red);
+      border-width: 3px;
+    }
+    
+    .request-info {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Porkys', sans-serif;
+      font-weight: lighter;
+      flex: 1;
+      margin-right: 20px;
+    }
+    
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .request-number {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+    }
+
+    .priority-badge {
+      background-color: var(--button-red);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-family: 'Porkys', sans-serif;
+      font-weight: bold;
+    }
+    
+    .request-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+
+    .request-date {
+      font-size: 14px;
+      color: var(--date-color);
+      font-family: 'Porkys', sans-serif;
+    }
+
+    .request-retailer {
+      font-size: 14px;
+      color: var(--button-blue);
+      font-family: 'Porkys', sans-serif;
+      font-weight: bold;
+    }
+
+    .request-type {
+      font-size: 14px;
+      color: var(--button-orange);
+      font-family: 'Porkys', sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .request-description {
+      font-size: 16px;
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+      font-weight: lighter;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .request-details {
+      background-color: var(--bg-color);
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-family: 'Porkys', sans-serif;
+    }
+    
+    .request-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 180px;
+    }
+    
+    .status {
+      padding: 8px 12px;
+      border-radius: 15px;
+      font-size: 14px;
+      font-family: 'Porkys', sans-serif;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    
+    .pending {
+      background-color: #FFD700;
+      color: #333;
+    }
+    
+    .approved {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .rejected {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .in-progress {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .action-buttons button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      transition: all 0.2s ease;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    
+    .approve-btn {
+      background-color: var(--button-green);
+      color: white;
+    }
+
+    .approve-btn:hover {
+      background-color: #059669;
+      transform: translateY(-1px);
+    }
+    
+    .reject-btn {
+      background-color: var(--button-red);
+      color: white;
+    }
+
+    .reject-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+    }
+    
+    .respond-btn {
+      background-color: var(--button-blue);
+      color: white;
+    }
+
+    .respond-btn:hover {
+      background-color: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .view-btn {
+      background-color: var(--button-orange);
+      color: white;
+    }
+
+    .view-btn:hover {
+      background-color: #c2621b;
+      transform: translateY(-1px);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-family: "Porkys", sans-serif;
+      font-size: 18px;
+      display: none;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      background-color: var(--modal-bg);
+      margin: 5% auto;
+      padding: 2rem;
+      border: none;
+      max-width: 600px;
+      width: 90%;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .modal-header h3 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      font-family: 'Porkys', sans-serif;
+    }
+
+    .close {
+      color: var(--text-secondary);
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .close:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      font-family: 'Porkys', sans-serif;
+    }
+
+    .modal-body label {
+      display: block;
+      margin: 1rem 0 0.5rem;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .modal-body textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      font-family: 'Porkys', sans-serif;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+      box-sizing: border-box;
+    }
+
+    .modal-body textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Porkys', sans-serif;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .modal-actions .primary-btn {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .modal-actions .secondary-btn {
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: var(--nav-bg);
+      color: white;
+      padding: 2rem 0 1rem;
+      margin-top: 3rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .footer-left h3 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+    }
+
+    .footer-left p {
+      color: #b0b0b0;
+      margin: 5px 0;
+      font-family: "Aileron", sans-serif;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .theme-toggle label {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 16px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background-color: #333;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: 2px solid #555;
+    }
+
+    .toggle-switch.active {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(30px);
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #444;
+      color: #888;
+    }
+
+    @media (max-width: 768px) {
+      .request-item {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .request-actions {
+        min-width: unset;
+        width: 100%;
+      }
+
+      .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .stats-bar {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="text">Compare It!</div>
+    <div class="nav-links">
+      <a href="adminDashboard.html">Dashboard</a>
+      <a href="adminRequests.html">Requests</a>
+      <a href="adminUsers.html">Users</a>
+      <a href="adminReports.html">Reports</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="admin-header">
+    <h2>Request Management</h2>
+    <div class="admin-badge">ADMIN PANEL</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-number" id="totalRequests">0</div>
+      <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="pendingRequests">0</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="approvedRequests">0</div>
+      <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="rejectedRequests">0</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search requests..." oninput="searchRequests()">
+    <select id="statusFilter" onchange="filterByStatus()">
+      <option value="">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+      <option value="in-progress">In Progress</option>
+    </select>
+    <select id="sortSelect" onchange="sortRequests()">
+      <option value="">Sort By</option>
+      <option value="date">Date (Newest First)</option>
+      <option value="dateOld">Date (Oldest First)</option>
+      <option value="priority">Priority</option>
+      <option value="retailer">Retailer</option>
+      <option value="type">Request Type</option>
+    </select>
+    <button onclick="searchRequests()">Search</button>
+  </div>
+
+  <div class="requests" id="requestsContainer">
+    <!-- Requests will be dynamically rendered here -->
+  </div>
+
+  <div class="no-results" id="noResults">
+    No requests found matching your criteria.
+  </div>
+
+  <!-- Response Modal -->
+  <div id="responseModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Respond to Request</h3>
+        <span class="close" onclick="closeModal('responseModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p><strong>Request:</strong> <span id="modalRequestNumber"></span></p>
+        <p><strong>Type:</strong> <span id="modalRequestType"></span></p>
+        <p><strong>From:</strong> <span id="modalRequestRetailer"></span></p>
+        
+        <label for="responseText">Your Response:</label>
+        <textarea id="responseText" placeholder="Enter your response to the retailer..."></textarea>
+        
+        <div class="modal-actions">
+          <button class="secondary-btn" onclick="closeModal('responseModal')">Cancel</button>
+          <button class="primary-btn" onclick="submitResponse()">Send Response</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Details Modal -->
+  <div id="viewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Request Details</h3>
+        <span class="close" onclick="closeModal('viewModal')">&times;</span>
+      </div>
+      <div class="modal-body" id="viewModalContent">
+        <!-- Content will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <h3>Compare It! Admin</h3>
+        <p>Administrative control panel</p>
+        <p>Manage requests, users, and system operations</p>
+      </div>
+      
+      <div class="theme-toggle">
+        <label for="themeToggle">🌙 Dark Mode</label>
+        <div class="toggle-switch" id="themeToggle">
+          <div class="toggle-slider">☀️</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>© 2025 Compare It! Admin Panel. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Sample admin requests data with more detailed information
+    const adminRequests = [
+      {
+        id: 1001,
+        date: '2025-05-15',
+        retailer: 'Hernandez Supplies',
+        type: 'Product Out of Stock Request',
+        description: 'Request to restock KOO Baked Beans in Tomato Sauce - 410g cans. Current inventory: 0 units. Last sold: 2023-05-12.',
+        status: 'pending',
+        priority: false,
+        details: {
+          productName: 'KOO Baked Beans in Tomato Sauce',
+          productSize: '410g',
+          currentStock: 0,
+          lastSold: '2023-05-12',
+          requestedQuantity: 50,
+          urgency: 'Medium'
+        }
+      },
+      {
+        id: 1002,
+        date: '2025-05-16',
+        retailer: 'Lopez Electronics',
+        type: 'Add New Product Request',
+        description: 'Add Woolworths Premium Chocolate Cake - 500g to bakery section. Customer requests for premium cakes increasing.',
+        status: 'approved',
+        priority: false,
+        details: {
+          productName: 'Woolworths Premium Chocolate Cake',
+          productSize: '500g',
+          suggestedPrice: 'R89.99',
+          supplier: 'Woolworths Food Distribution',
+          category: 'Bakery',
+          estimatedDemand: 'High'
+        }
+      },
+      {
+        id: 1003,
+        date: '2025-05-17',
+        retailer: 'Gonzalez Gadgets',
+        type: 'Edit Product Request',
+        description: 'Update Albany Superior White Bread - 700g pricing from R16.99 to R14.99 due to supplier discount.',
+        status: 'in-progress',
+        priority: true,
+        details: {
+          productName: 'Albany Superior White Bread',
+          currentPrice: 'R16.99',
+          requestedPrice: 'R14.99',
+          reason: 'Supplier discount',
+          effectiveDate: '2025-05-20'
+        }
+      },
+      {
+        id: 1004,
+        date: '2025-05-18',
+        retailer: 'Wilson Clothing',
+        type: 'Product Out of Stock Request',
+        description: 'Emergency restock request for KOO Mixed Vegetables - 410g cans. Completely sold out after weekend promotion.',
+        status: 'rejected',
+        priority: true,
+        details: {
+          productName: 'KOO Mixed Vegetables',
+          productSize: '410g',
+          reasonForOutage: 'Weekend promotion success',
+          customersAsking: '30+',
+          supplierDeliveryTime: '2 business days'
+        }
+      },
+      {
+        id: 1005,
+        date: '2025-05-19',
+        retailer: 'Moore Books',
+        type: 'Add New Product Request',
+        description: 'Request to add Woolworths Red Velvet Cupcakes - 6 pack to bakery section. Popular item missing from our sweet treats.',
+        status: 'pending',
+        priority: false,
+        details: {
+          productName: 'Woolworths Red Velvet Cupcakes',
+          packSize: '6 pack',
+          costPrice: 'R45.99',
+          suggestedRetail: 'R54.99',
+          weeklyEstimate: '15-20 packs'
+        }
+      },
+      {
+        id: 1006,
+        date: '2025-05-20',
+        retailer: 'Taylor Tools',
+        type: 'Edit Product Request',
+        description: 'Remove Sasko Brown Bread - 600g from active catalog due to low sales and new wholegrain range availability.',
+        status: 'pending',
+        priority: false,
+        details: {
+          productName: 'Sasko Brown Bread',
+          productSize: '600g',
+          reason: 'Low sales, new range available',
+          remainingStock: '8 loaves',
+          proposedAction: 'Move to discount section with 30% off'
+        }
+      }
+    ];
+
+    let filteredRequests = [...adminRequests];
+    let currentRequestId = null;
+
+    function logout() {
+        window.location.href = 'loginregister.php';
+    }
+
+    function updateStats() {
+      const total = adminRequests.length;
+      const pending = adminRequests.filter(r => r.status === 'pending').length;
+      const approved = adminRequests.filter(r => r.status === 'approved').length;
+      const rejected = adminRequests.filter(r => r.status === 'rejected').length;
+
+      document.getElementById('totalRequests').textContent = total;
+      document.getElementById('pendingRequests').textContent = pending;
+      document.getElementById('approvedRequests').textContent = approved;
+      document.getElementById('rejectedRequests').textContent = rejected;
+    }
+
+    function renderRequests(requestsToRender = filteredRequests) {
+      const container = document.getElementById('requestsContainer');
+      const noResults = document.getElementById('noResults');
+      
+      container.innerHTML = '';
+      
+      if (requestsToRender.length === 0) {
+        noResults.style.display = 'block';
+        return;
+      } else {
+        noResults.style.display = 'none';
+      }
+
+      requestsToRender.forEach(request => {
+        const requestElement = document.createElement('div');
+        requestElement.className = `request-item ${request.priority ? 'priority' : ''}`;
+        requestElement.innerHTML = `
+          <div class="request-info">
+            <div class="request-header">
+              <span class="request-number">Request #${request.id}</span>
+              ${request.priority ? '<span class="priority-badge">HIGH PRIORITY</span>' : ''}
+            </div>
+            <div class="request-meta">
+              <span class="request-date">Created: ${request.date}</span>
+              <span class="request-retailer">From: ${request.retailer}</span>
+              <span class="request-type">${request.type}</span>
+            </div>
+            <div class="request-description">${request.description}</div>
+            <div class="request-details">
+              <strong>Additional Details:</strong> ${Object.entries(request.details).map(([key, value]) => 
+                `${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: ${value}`
+              ).join(' | ')}
+            </div>
+          </div>
+          <div class="request-actions">
+            <div class="status ${request.status.replace(' ', '-')}">${request.status.toUpperCase()}</div>
+            <div class="action-buttons">
+              ${request.status === 'pending' ? `
+                <button class="approve-btn" onclick="approveRequest(${request.id})">✓ Approve</button>
+                <button class="reject-btn" onclick="rejectRequest(${request.id})">✗ Reject</button>
+              ` : ''}
+              <button class="respond-btn" onclick="openResponseModal(${request.id})">💬 Respond</button>
+              <button class="view-btn" onclick="viewRequestDetails(${request.id})">👁 View Details</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(requestElement);
+      });
+    }
+
+    function searchRequests() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('statusFilter').value;
+      
+      let filtered = [...adminRequests];
+      
+      // Apply search filter
+      if (searchTerm !== '') {
+        filtered = filtered.filter(request => 
+          request.id.toString().includes(searchTerm) ||
+          request.retailer.toLowerCase().includes(searchTerm) ||
+          request.type.toLowerCase().includes(searchTerm) ||
+          request.description.toLowerCase().includes(searchTerm) ||
+          request.status.toLowerCase().includes(searchTerm) ||
+          request.date.includes(searchTerm)
+        );
+      }
+      
+      // Apply status filter
+      if (statusFilter !== '') {
+        filtered = filtered.filter(request => request.status === statusFilter);
+      }
+      
+      filteredRequests = filtered;
+      
+      // Apply current sort after filtering
+      const currentSort = document.getElementById('sortSelect').value;
+      if (currentSort) {
+        applySorting(currentSort);
+      } else {
+        renderRequests();
+      }
+    }
+
+    function filterByStatus() {
+      searchRequests(); // This will apply both search and status filter
+    }
+
+    function sortRequests() {
+      const sortBy = document.getElementById('sortSelect').value;
+      applySorting(sortBy);
+    }
+
+    function applySorting(sortBy) {
+      let sortedRequests = [...filteredRequests];
+      
+      switch(sortBy) {
+        case 'date':
+          sortedRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case 'dateOld':
+          sortedRequests.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case 'priority':
+          sortedRequests.sort((a, b) => b.priority - a.priority);
+          break;
+        case 'retailer':
+          sortedRequests.sort((a, b) => a.retailer.localeCompare(b.retailer));
+          break;
+        case 'type':
+          sortedRequests.sort((a, b) => a.type.localeCompare(b.type));
+          break;
+        default:
+          break;
+      }
+      
+      renderRequests(sortedRequests);
+    }
+
+    function approveRequest(id) {
+      if (confirm(`Are you sure you want to APPROVE Request #${id}?`)) {
+        const request = adminRequests.find(r => r.id === id);
+        if (request) {
+          request.status = 'approved';
+          alert(`Request #${id} has been APPROVED successfully!\n\nNote: In production, this would update the database and notify the retailer.`);
+          searchRequests(); // Refresh display
+          updateStats(); // Update statistics
+        }
+      }
+    }
+
+    function rejectRequest(id) {
+      const reason = prompt(`Please provide a reason for rejecting Request #${id}:`);
+      if (reason && reason.trim() !== '') {
+        const request = adminRequests.find(r => r.id === id);
+        if (request) {
+          request.status = 'rejected';
+          request.rejectionReason = reason.trim();
+          alert(`Request #${id} has been REJECTED.\n\nReason: ${reason}\n\nNote: In production, this would update the database and notify the retailer.`);
+          searchRequests(); // Refresh display
+          updateStats(); // Update statistics
+        }
+      } else if (reason !== null) {
+        alert('Rejection reason is required.');
+      }
+    }
+
+    function openResponseModal(id) {
+      const request = adminRequests.find(r => r.id === id);
+      if (request) {
+        currentRequestId = id;
+        document.getElementById('modalRequestNumber').textContent = `#${request.id}`;
+        document.getElementById('modalRequestType').textContent = request.type;
+        document.getElementById('modalRequestRetailer').textContent = request.retailer;
+        document.getElementById('responseText').value = '';
+        document.getElementById('responseModal').style.display = 'block';
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      currentRequestId = null;
+    }
+
+    function submitResponse() {
+      const responseText = document.getElementById('responseText').value.trim();
+      if (responseText === '') {
+        alert('Please enter a response message.');
+        return;
+      }
+
+      const request = adminRequests.find(r => r.id === currentRequestId);
+      if (request) {
+        if (!request.adminResponses) {
+          request.adminResponses = [];
+        }
+        request.adminResponses.push({
+          date: new Date().toISOString().split('T')[0],
+          message: responseText,
+          admin: 'Current Admin'
+        });
+        
+        alert(`Response sent to ${request.retailer} for Request #${currentRequestId}!\n\nMessage: "${responseText}"\n\nNote: In production, this would be sent via email/notification system.`);
+        closeModal('responseModal');
+      }
+    }
+
+    function viewRequestDetails(id) {
+      const request = adminRequests.find(r => r.id === id);
+      if (request) {
+        const detailsHtml = `
+          <div style="font-family: 'Porkys', sans-serif;">
+            <h4>Request #${request.id}</h4>
+            <p><strong>Date Created:</strong> ${request.date}</p>
+            <p><strong>Retailer:</strong> ${request.retailer}</p>
+            <p><strong>Type:</strong> ${request.type}</p>
+            <p><strong>Status:</strong> <span class="status ${request.status.replace(' ', '-')}" style="padding: 4px 8px; border-radius: 8px; font-size: 12px;">${request.status.toUpperCase()}</span></p>
+            <p><strong>Priority:</strong> ${request.priority ? 'HIGH PRIORITY' : 'Normal'}</p>
+            
+            <h5>Description:</h5>
+            <p style="background-color: var(--bg-color); padding: 10px; border-radius: 8px; line-height: 1.4;">${request.description}</p>
+            
+            <h5>Detailed Information:</h5>
+            <ul style="background-color: var(--bg-color); padding: 15px; border-radius: 8px;">
+              ${Object.entries(request.details).map(([key, value]) => 
+                `<li><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> ${value}</li>`
+              ).join('')}
+            </ul>
+            
+            ${request.rejectionReason ? `
+              <h5>Rejection Reason:</h5>
+              <p style="background-color: #fee2e2; color: #dc2626; padding: 10px; border-radius: 8px;">${request.rejectionReason}</p>
+            ` : ''}
+            
+            ${request.adminResponses && request.adminResponses.length > 0 ? `
+              <h5>Admin Responses:</h5>
+              <div style="background-color: var(--bg-color); padding: 10px; border-radius: 8px;">
+                ${request.adminResponses.map(response => `
+                  <div style="margin-bottom: 10px; padding: 8px; background-color: var(--card-bg); border-radius: 5px;">
+                    <small style="color: var(--text-secondary);">${response.date} - ${response.admin}</small>
+                    <p style="margin: 5px 0 0 0;">${response.message}</p>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        
+        document.getElementById('viewModalContent').innerHTML = detailsHtml;
+        document.getElementById('viewModal').style.display = 'block';
+      }
+    }
+
+    function initializeTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const savedTheme = 'light'; // Default theme
+      
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      }
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      const responseModal = document.getElementById('responseModal');
+      const viewModal = document.getElementById('viewModal');
+      
+      if (event.target === responseModal) {
+        closeModal('responseModal');
+      }
+      if (event.target === viewModal) {
+        closeModal('viewModal');
+      }
+    }
+
+    // Real-time search as user types
+    document.getElementById('searchInput').addEventListener('input', searchRequests);
+
+    // Add event listeners and initialize
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+    // Initialize the page
+    window.addEventListener('DOMContentLoaded', () => {
+      initializeTheme();
+      updateStats();
+      renderRequests(); // Initial render of requests
+    });
+  </script>
+</body>
+</html>
