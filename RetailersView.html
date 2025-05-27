@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <title>Products</title>
   <style>
     @font-face {
         font-family: 'Porkys';
-        src:url('FONT/CalSans-Regular.ttf');
+        src: url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     }
     @font-face {
         font-family: 'Aileron';
-        src: url('FONT/Aileron-Regular.otf');
+        src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+    }
+    
+    :root {
+      /* Light mode colors */
+      --bg-color: #f0dcbd;
+      --card-bg: white;
+      --text-primary: #113d2a;
+      --text-secondary: #28805a;
+      --nav-bg: rgb(17, 61, 42);
+      --accent-color: #5bb890;
+      --border-color: #113d2a;
+      --modal-bg: #fefefe;
+      --input-bg: white;
+      --button-bg: #f0dcbd;
+    }
+    
+    [data-theme="dark"] {
+      /* Dark mode colors */
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-primary: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --nav-bg: #0f2419;
+      --accent-color: #4a9570;
+      --border-color: #444;
+      --modal-bg: #2d2d2d;
+      --input-bg: #3a3a3a;
+      --button-bg: #3a3a3a;
     }
     
     body {
       font-family: 'Aileron', Arial, sans-serif;
-      background-color: #f0dcbd;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     nav {
-      background-color: rgb(17, 61, 42);
+      background-color: var(--nav-bg);
       padding: 10px 10px;
       color: white;
       display: flex;
@@ -67,22 +97,26 @@
       padding: 0.5rem;
       flex-grow: 1;
       border-radius: 15px;
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
       font-family: 'Porkys', sans-serif;
     }
     
     .controls select {
       border-radius: 15px;
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
       padding: 0.5rem;
       font-family: 'Porkys', sans-serif;
     }
     
     .controls button {
       border-radius: 15px;
-      background-color: #f0dcbd;
-      color: black;
-      border: 2px solid #113d2a;
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
       padding: 0.5rem 1rem;
       cursor: pointer;
       font-family: 'Porkys', sans-serif;
@@ -90,7 +124,7 @@
     }
     
     .controls button:hover {
-      background-color: #5bb890;
+      background-color: var(--accent-color);
       transform: scale(1.1);
     }
 
@@ -104,14 +138,15 @@
     }
 
     .product-card {
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
       border-radius: 15px;
       padding: 10px;
       width: 350px;
       text-align: center;
-      background-color: white;
+      background-color: var(--card-bg);
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       position: relative;
+      transition: background-color 0.3s ease;
     }
 
     .product-card img {
@@ -123,14 +158,14 @@
     }
 
     .product-card h4 {
-      color: #113d2a;
+      color: var(--text-primary);
       font-family: "Porkys", sans-serif;
       font-size: 20px;
       font-weight: lighter;
     }
     
     .product-card p {
-      color: #28805a;
+      color: var(--text-secondary);
       font-family: "Porkys", sans-serif;
       font-size: 15px;
       font-weight: lighter;
@@ -144,9 +179,9 @@
       margin-bottom: 10px;
       padding: 0.5rem 1rem;
       cursor: pointer;
-      background-color: #f0dcbd;
-      color: black;
-      border: 2px solid #113d2a;
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
       border-radius: 15px;
       font-family: 'Porkys', sans-serif;
       font-size: 16px;
@@ -154,7 +189,7 @@
     }
     
     .product-card button:hover {
-      background-color: #5bb890;
+      background-color: var(--accent-color);
       transform: scale(1.1);
     }
     
@@ -179,10 +214,10 @@
     }
 
     .modal-content {
-      background-color: #fefefe;
+      background-color: var(--modal-bg);
       margin: auto;
       padding: 20px;
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
       width: 350px;
       border-radius: 15px;
     }
@@ -191,7 +226,7 @@
       display: block;
       margin: 10px 0 5px;
       font-family: 'Porkys', sans-serif;
-      color: #113d2a;
+      color: var(--text-primary);
     }
 
     .modal-content label.checkbox-label {
@@ -210,7 +245,9 @@
       width: 100%;
       padding: 8px;
       border-radius: 15px;
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-primary);
       font-family: 'Porkys', sans-serif;
     }
 
@@ -218,9 +255,9 @@
       width: 100%;
       height: 40px;
       margin-top: 15px;
-      background-color: #f0dcbd;
-      color: black;
-      border: 2px solid #113d2a;
+      background-color: var(--button-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
       border-radius: 15px;
       font-family: 'Porkys', sans-serif;
       font-size: 16px;
@@ -229,7 +266,7 @@
     }
     
     .modal-content button:hover {
-      background-color: #5bb890;
+      background-color: var(--accent-color);
       transform: scale(1.05);
     }
 
@@ -239,7 +276,7 @@
       align-items: center;
       padding: 1rem 2rem;
       color: white;
-      background-color: rgb(17, 61, 42);
+      background-color: var(--nav-bg);
       border-radius: 15px;
       margin: 1rem 2rem 0 2rem;
     }
@@ -254,7 +291,7 @@
     .add-section button {
       padding: 10px 20px;
       border-radius: 15px;
-      background-color: #f0dcbd;
+      background-color: var(--button-bg);
       font-family: 'Porkys', sans-serif;
       border: none;
       cursor: pointer;
@@ -263,25 +300,25 @@
     }
     
     .add-section button:hover {
-      background-color: #5bb890;
+      background-color: var(--accent-color);
       transform: scale(1.1);
     }
 
     .review-page {
-      background-color: white;
+      background-color: var(--card-bg);
       padding: 1rem;
       margin: 2rem;
       border-radius: 15px;
-      border: 2px solid #113d2a;
+      border: 2px solid var(--border-color);
     }
     
     .review-page h3, .review-page h4 {
-      color: #113d2a;
+      color: var(--text-primary);
       font-family: "Porkys", sans-serif;
     }
     
     .review-page p, .review-page li {
-      color: #28805a;
+      color: var(--text-secondary);
       font-family: "Porkys", sans-serif;
     }
     
@@ -289,8 +326,8 @@
       width: auto;
       padding: 10px 20px;
       margin-top: 10px;
-      background-color: #f0dcbd;
-      border: 2px solid #113d2a;
+      background-color: var(--button-bg);
+      border: 2px solid var(--border-color);
       border-radius: 15px;
       font-family: 'Porkys', sans-serif;
       cursor: pointer;
@@ -298,19 +335,25 @@
     }
     
     .review-page button:hover {
-      background-color: #5bb890;
+      background-color: var(--accent-color);
       transform: scale(1.1);
+    }
+
+    .review-page textarea {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
     }
     
     .image-upload-preview {
       width: 100%;
       height: 150px;
-      border: 2px dashed #113d2a;
+      border: 2px dashed var(--border-color);
       margin-top: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #f9f9f9;
+      background-color: var(--input-bg);
       overflow: hidden;
       border-radius: 15px;
     }
@@ -343,15 +386,17 @@
     .tab {
       padding: 8px 15px;
       cursor: pointer;
-      border: 2px solid #113d2a;
-      background-color: #f0dcbd;
+      border: 2px solid var(--border-color);
+      background-color: var(--button-bg);
+      color: var(--text-primary);
       font-family: 'Porkys', sans-serif;
       flex: 1;
       text-align: center;
+      transition: background-color 0.3s ease;
     }
     
     .tab.active {
-      background-color: #113d2a;
+      background-color: var(--nav-bg);
       color: white;
     }
     
@@ -361,6 +406,103 @@
     
     .tab-content.active {
       display: block;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: var(--nav-bg);
+      color: white;
+      padding: 2rem 0 1rem;
+      margin-top: 3rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .footer-left h3 {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+    }
+
+    .footer-left p {
+      color: #b0b0b0;
+      margin: 5px 0;
+      font-family: "Aileron", sans-serif;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .theme-toggle label {
+      color: white;
+      font-family: "Porkys", sans-serif;
+      font-size: 16px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background-color: #333;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: 2px solid #555;
+    }
+
+    .toggle-switch.active {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(30px);
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #444;
+      color: #888;
+    }
+
+    .modal-content .close {
+      color: var(--text-secondary);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-content .close:hover {
+      color: var(--text-primary);
     }
   </style>
 </head>
@@ -393,7 +535,7 @@
 
   <div class="product-grid" id="productGrid">
     <div class="product-card">
-      <img src="wooliesMilk.jpg" alt="Woolies Milk">
+      <img src="https://via.placeholder.com/350x400/4CAF50/white?text=Woolies+Milk" alt="Woolies Milk">
       <h4>Woolies Milk</h4>
       <p>R79.00</p>
       <p>Status: In Stock</p>
@@ -405,7 +547,7 @@
     </div>
 
     <div class="product-card">
-      <img src="wooliesCake.jpg" alt="Woolies Cake">
+      <img src="https://via.placeholder.com/350x400/FF9800/white?text=Woolies+Cake" alt="Woolies Cake">
       <h4>Woolies Cake</h4>
       <p>R259.99</p>
       <p>Status: In Stock</p>
@@ -417,7 +559,7 @@
     </div>
 
     <div class="product-card">
-      <img src="wooliesFantastical.jpg" alt="Woolies Fantastical">
+      <img src="https://via.placeholder.com/350x400/2196F3/white?text=Woolies+Fantastical" alt="Woolies Fantastical">
       <h4>Woolies Fantastical</h4>
       <p>R59.99</p>
       <p>Status: In Stock</p>
@@ -431,7 +573,7 @@
 
   <div id="addModal" class="modal">
     <div class="modal-content">
-      <span onclick="document.getElementById('addModal').style.display='none'" style="float:right;cursor:pointer">&times;</span>
+      <span class="close" onclick="document.getElementById('addModal').style.display='none'">&times;</span>
       <h3>Add New Product</h3>
       <label for="productName">Name:</label>
       <input type="text" id="productName">
@@ -460,12 +602,41 @@
 
       <label for="productBrand">Brand:</label>
       <select id="productBrand">
-        <option value="Woolworths">Woolworths</option>
-        <option value="Pick n Pay">Pick n Pay</option>
-        <option value="Shoprite">Shoprite</option>
-        <option value="Checkers">Checkers</option>
-        <option value="Spar">Spar</option>
-        <option value="Food Lover's Market">Food Lover's Market</option>
+        <option value="">Select Brand</option>
+        <option value="KOO">KOO</option>
+        <option value="Sasko">Sasko</option>
+        <option value="Albany">Albany</option>
+        <option value="Black Cat">Black Cat</option>
+        <option value="All Gold">All Gold</option>
+        <option value="Iwisa">Iwisa</option>
+        <option value="Jungle Oats">Jungle Oats</option>
+        <option value="Simba">Simba</option>
+        <option value="Nik Naks">Nik Naks</option>
+        <option value="Maggi">Maggi</option>
+        <option value="Knorr">Knorr</option>
+        <option value="Aromat">Aromat</option>
+        <option value="Bovril">Bovril</option>
+        <option value="Marmite">Marmite</option>
+        <option value="Coca-Cola">Coca-Cola</option>
+        <option value="Fanta">Fanta</option>
+        <option value="Sprite">Sprite</option>
+        <option value="Mageu">Mageu</option>
+        <option value="Cremora">Cremora</option>
+        <option value="Five Roses">Five Roses</option>
+        <option value="Rooibos Ltd">Rooibos Ltd</option>
+        <option value="Nescafé">Nescafé</option>
+        <option value="Ricoffy">Ricoffy</option>
+        <option value="Frisco">Frisco</option>
+        <option value="Kellogg's">Kellogg's</option>
+        <option value="Pronutro">Pronutro</option>
+        <option value="Weet-Bix">Weet-Bix</option>
+        <option value="Bokomo">Bokomo</option>
+        <option value="Blue Ribbon">Blue Ribbon</option>
+        <option value="Spekko">Spekko</option>
+        <option value="Tastic">Tastic</option>
+        <option value="Hinds">Hinds</option>
+        <option value="Mrs Ball's">Mrs Ball's</option>
+        <option value="Wellington's">Wellington's</option>
         <option value="Other">Other</option>
       </select>
 
@@ -475,7 +646,7 @@
 
   <div id="updateModal" class="modal">
     <div class="modal-content">
-      <span onclick="document.getElementById('updateModal').style.display='none'" style="float:right;cursor:pointer">&times;</span>
+      <span class="close" onclick="document.getElementById('updateModal').style.display='none'">&times;</span>
       <h3>Update Product</h3>
       <label for="updateProductName">Name:</label>
       <input type="text" id="updateProductName">
@@ -532,34 +703,103 @@
     </ul>
 
     <h4>Respond to Reviews</h4>
-    <textarea rows="4" style="width:100%; border-radius: 15px; border: 2px solid #113d2a; padding: 10px; font-family: 'Porkys', sans-serif;" placeholder="Write your response..."></textarea>
+    <textarea rows="4" style="width:100%; border-radius: 15px; border: 2px solid var(--border-color); padding: 10px; font-family: 'Porkys', sans-serif;" placeholder="Write your response..."></textarea>
     <button style="margin-top:10px;">Submit Response</button>
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <h3>Compare It!</h3>
+        <p>Your trusted price comparison platform</p>
+        <p>Compare prices across major South African retailers</p>
+      </div>
+      
+      <div class="theme-toggle">
+        <label for="themeToggle">🌙 Dark Mode</label>
+        <div class="toggle-switch" id="themeToggle">
+          <div class="toggle-slider">☀️</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>© 2025 Compare It! All rights reserved. | Helping you find the best deals.</p>
+    </div>
+  </footer>
 
   <script>
     const products = [
       {
         name: "Woolies Milk",
         price: "79.00",
-        image: "wooliesMilk.jpg",
+        image: "https://via.placeholder.com/350x400/4CAF50/white?text=Woolies+Milk",
         brand: "Woolworths",
         status: "In Stock"
       },
       {
         name: "Woolies Cake",
         price: "259.99",
-        image: "wooliesCake.jpg",
+        image: "https://via.placeholder.com/350x400/FF9800/white?text=Woolies+Cake",
         brand: "Woolworths",
         status: "In Stock"
       },
       {
         name: "Woolies Fantastical",
         price: "59.99",
-        image: "wooliesFantastical.jpg",
+        image: "https://via.placeholder.com/350x400/2196F3/white?text=Woolies+Fantastical",
         brand: "Woolworths",
         status: "In Stock"
       }
     ];
+
+    function initializeTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const savedTheme = getThemePreference() || 'light';
+      
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      }
+    }
+
+    function getThemePreference() {
+      return 'light';
+    }
+
+    function setThemePreference(theme) {
+      window.currentTheme = theme;
+    }
+
+    function toggleTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      const slider = themeToggle?.querySelector('.toggle-slider');
+      
+      if (!themeToggle || !slider) return;
+      
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        setThemePreference('light');
+        themeToggle.classList.remove('active');
+        slider.textContent = '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        setThemePreference('dark');
+        themeToggle.classList.add('active');
+        slider.textContent = '🌙';
+      }
+    }
     
     function switchTab(tabName) {
       document.querySelectorAll('#addModal .tab-content').forEach(tab => {
@@ -597,219 +837,49 @@
     }
     
     function previewImage(input) {
-      const preview = document.getElementById('imagePreview');
-      
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-        }
-        
-        reader.readAsDataURL(input.files[0]);
-      } else {
-        preview.innerHTML = '<span>Image preview</span>';
-      }
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = ''; // Clear existing content
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = 'Image Preview';
+        preview.appendChild(img);
+      };
+       reader.readAsDataURL(input.files[0]);
+    } else {
+      preview.innerHTML = '<span>Image preview</span>';
     }
-    
-    function previewUpdateImage(input) {
-      const preview = document.getElementById('updateImagePreview');
-      
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-        }
-        
-        reader.readAsDataURL(input.files[0]);
-      } else {
-        preview.innerHTML = '<span>Image preview</span>';
-      }
-    }
-    
-    function addProduct() {
-      const name = document.getElementById('productName').value;
-      const price = document.getElementById('productPrice').value;
-      const brand = document.getElementById('productBrand').value;
-      const status = 'In Stock'; // All new products are in stock by default
-      
-      let imageUrl;
-      
-      if (document.getElementById('urlTab').classList.contains('active')) {
-        imageUrl = document.getElementById('productImageUrl').value;
-      } else {
-        const fileInput = document.getElementById('productImageFile');
-        if (fileInput.files && fileInput.files[0]) {
-          imageUrl = URL.createObjectURL(fileInput.files[0]);
-        } else {
-          imageUrl = ''; 
-        }
-      }
+  }
 
-      if (!name || !price || !imageUrl) {
-        alert('Please fill in all fields including an image.');
-        return;
-      }
-      
-      products.push({
-        name: name,
-        price: price,
-        image: imageUrl,
-        brand: brand,
-        status: status
-      });
+  function previewUpdateImage(input) {
+    const preview = document.getElementById('updateImagePreview');
+    preview.innerHTML = ''; // Clear existing content
 
-      const grid = document.getElementById('productGrid');
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      card.innerHTML = `
-        <img src="${imageUrl}" alt="${name}">
-        <h4>${name}</h4>
-        <p>R${parseFloat(price).toFixed(2)}</p>
-        <p>Status: ${status}</p>
-        <div class="product-actions">
-          <button onclick="viewProduct('${name}', '${price}', '${status}')">View</button>
-          <button onclick="openUpdateModal(${products.length - 1})">Update</button>
-          <button onclick="deleteProduct(this)">Delete</button>
-        </div>
-      `;
-      grid.appendChild(card);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
 
-      document.getElementById('productName').value = '';
-      document.getElementById('productPrice').value = '';
-      document.getElementById('productImageUrl').value = '';
-      document.getElementById('productImageFile').value = '';
-      document.getElementById('imagePreview').innerHTML = '<span>Image preview</span>';
-      document.getElementById('productBrand').value = 'Woolworths';
-      document.getElementById('addModal').style.display = 'none';
-    }
-
-    function openUpdateModal(index) {
-      const product = products[index];
-      
-      document.getElementById('updateProductName').value = product.name;
-      document.getElementById('updateProductPrice').value = product.price;
-      document.getElementById('updateProductImageUrl').value = product.image;
-      document.getElementById('updateProductCategory').value = product.category || 'Dairy';
-      document.getElementById('updateOutOfStock').checked = product.status === 'Out of Stock';
-      document.getElementById('updateProductIndex').value = index;
-      
-      document.getElementById('updateModal').style.display = 'block';
-    }
-    
-    function updateProduct() {
-      const index = document.getElementById('updateProductIndex').value;
-      const name = document.getElementById('updateProductName').value;
-      const price = document.getElementById('updateProductPrice').value;
-      const category = document.getElementById('updateProductCategory').value;
-      const outOfStock = document.getElementById('updateOutOfStock').checked;
-      const status = outOfStock ? 'Out of Stock' : 'In Stock';
-      
-      let imageUrl;
-      
-      if (document.getElementById('updateUrlTab').classList.contains('active')) {
-        imageUrl = document.getElementById('updateProductImageUrl').value;
-      } else {
-        const fileInput = document.getElementById('updateProductImageFile');
-        if (fileInput.files && fileInput.files[0]) {
-          imageUrl = URL.createObjectURL(fileInput.files[0]);
-        } else {
-          imageUrl = products[index].image; 
-        }
-      }
-
-      if (!name || !price) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-      
-      products[index] = {
-        name: name,
-        price: price,
-        image: imageUrl,
-        category: category,
-        brand: products[index].brand || 'Woolworths', // Preserve existing brand
-        status: status
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = 'Image Preview';
+        preview.appendChild(img);
       };
 
-      const productCards = document.querySelectorAll('.product-card');
-      const card = productCards[index];
-      
-      card.querySelector('img').src = imageUrl;
-      card.querySelector('img').alt = name;
-      card.querySelector('h4').textContent = name;
-      card.querySelector('p:nth-of-type(1)').textContent = `R${parseFloat(price).toFixed(2)}`;
-      card.querySelector('p:nth-of-type(2)').textContent = `Status: ${status}`;
-      card.querySelector('button:nth-of-type(1)').setAttribute('onclick', `viewProduct('${name}', '${price}', '${status}')`);
-      
-      document.getElementById('updateModal').style.display = 'none';
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      preview.innerHTML = '<span>Image preview</span>';
     }
-    
-    function deleteProduct(button) {
-      if (confirm('Are you sure you want to delete this product?')) {
-        const card = button.closest('.product-card');
-        const cards = Array.from(document.querySelectorAll('.product-card'));
-        const index = cards.indexOf(card);
-        
-        if (index > -1) {
-          products.splice(index, 1);
-        }
-        
-        card.remove();
-      }
-    }
+  }
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-    function viewProduct(name, price, status) {
-      document.getElementById('reviewTitle').innerText = name;
-      document.getElementById('reviewPrice').innerText = `R${parseFloat(price).toFixed(2)}`;
-      document.getElementById('reviewStatus').innerText = status;
-      document.getElementById('reviewPage').style.display = 'block';
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-    
-    document.querySelector('.controls button').addEventListener('click', function() {
-      const searchTerm = document.querySelector('.controls input[type="text"]').value.toLowerCase();
-      const sortBy = document.querySelector('.controls select').value;
-      
-      let filteredProducts = [...products];
-      
-      if (searchTerm) {
-        filteredProducts = filteredProducts.filter(product => 
-          product.name.toLowerCase().includes(searchTerm) ||
-          (product.brand && product.brand.toLowerCase().includes(searchTerm))
-        );
-      }
-      
-      if (sortBy === 'priceLowHigh') {
-        filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-      } else if (sortBy === 'priceHighLow') {
-        filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-      } else if (sortBy === 'name') {
-        filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-      }
-      
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-      
-      filteredProducts.forEach((product, index) => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h4>${product.name}</h4>
-          <p>R${parseFloat(product.price).toFixed(2)}</p>
-          <p>Status: ${product.status}</p>
-          <div class="product-actions">
-            <button onclick="viewProduct('${product.name}', '${product.price}', '${product.status}')">View</button>
-            <button onclick="openUpdateModal(${products.indexOf(product)})">Update</button>
-            <button onclick="deleteProduct(this)">Delete</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    });
-  </script>
-
+  // Initialize theme on load
+  window.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
+  });
+</script>
 </body>
 </html>
