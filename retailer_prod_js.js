@@ -5,9 +5,11 @@ let conversion = [];
 
 
 function fetchData(){
+    const api_key = localStorage.getItem('api_key');
+    const retailerID = localStorage.getItem('userID');
     const requestData = {
         type: 'GetAllRetailerProducts',
-        retailerID: "1"
+        retailerID: retailerID
     };
 
     fetch('finalAPI.php', {
@@ -161,10 +163,11 @@ document.getElementById('productForm').addEventListener('submit', function(event
         document.getElementById('productForm').style.display = 'none';
         return;
     }
+    const retailerID = localStorage.getItem('userID');
 
     const requestData = {
         type: 'AddProductRequest',
-        retailerID: "1",
+        retailerID: retailerID,
         price: parseFloat(document.getElementById('productPrice').value),
         brandName: document.getElementById('productBrand').value.trim(),
         description: document.getElementById('productDesc').value.trim(),
@@ -251,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.getElementById('editProductForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    const retailerID = localStorage.getItem('userID');
 
     const useUrl = document.getElementById('editUrlOption').checked;
     const imageUrlInput = document.getElementById('editProductImageUrl');
@@ -271,7 +275,7 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
 
     const requestData = {
         type: 'UpdateProductRequest',
-        retailerID: "1",
+        retailerID: retailerID,
         productID: document.getElementById('editProductName').value.trim(),
         productName: document.getElementById('editProductName').value.trim(),
         price: parseFloat(document.getElementById('editProductPrice').value),
