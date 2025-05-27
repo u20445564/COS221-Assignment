@@ -382,10 +382,8 @@ class API
         $sql = "
             SELECT $returnFields
             FROM products p
-            LEFT JOIN productscategory pc ON p.productID = pc.productID
-            LEFT JOIN categories c ON pc.categoryID = c.categoryID
-            LEFT JOIN productsbrand pb ON p.productID = pb.productID
-            LEFT JOIN brands b ON pb.brandID = b.brandID
+            LEFT JOIN categories c ON p.categoryID = c.categoryID
+            LEFT JOIN brands b ON p.brandID = b.brandID
             LEFT JOIN prices pr ON p.productID = pr.productID
             $whereClause
             GROUP BY p.productID
@@ -459,10 +457,8 @@ class API
         $sql = "
             SELECT $returnFields
             FROM products p
-            LEFT JOIN productscategory pc ON p.productID = pr.productID
-            LEFT JOIN categories c ON pr.categoryID = c.categoryID
-            LEFT JOIN productsbrand pb ON p.productID = pb.productID
-            LEFT JOIN brands b ON pb.brandID = b.brandID
+            LEFT JOIN categories c ON p.categoryID = c.categoryID
+            LEFT JOIN brands b ON p.brandID = b.brandID
             JOIN prices ON p.productID = pr.productID
             $whereClause
             $sortClause
@@ -847,26 +843,6 @@ class API
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
 
-            // 8) Insert into productscategory
-            $sql    = "INSERT INTO productscategory (productID, categoryID) VALUES (?, ?)";
-            $params = [
-                $newProductID,
-                    $payload['categoryID'],
-                ];
-                error_log("SQL: $sql | PARAMS: " . json_encode($params));
-                $stmt = $this->conn->prepare($sql);
-                $stmt->execute($params);
-
-                // 9) Insert into productsbrand
-                $sql    = "INSERT INTO productsbrand (productID, brandID) VALUES (?, ?)";
-                $params = [
-                    $newProductID,
-                    $payload['brandID'],
-                ];
-                error_log("SQL: $sql | PARAMS: " . json_encode($params));
-                $stmt = $this->conn->prepare($sql);
-                $stmt->execute($params);
-
                 // 10) Mark the request approved
                 $sql    = "UPDATE requests SET status = 'approved', modifiedAt = NOW() WHERE requestID = ?";
                 $params = [$data['requestID']];
@@ -881,10 +857,10 @@ class API
                     "message" => "Add request approved and product inserted"
                 ]);
 
-            } catch (Exception $e) {
-                $this->conn->rollBack();
-                respondError("Failed to approve add request: " . $e->getMessage(), 500);
-            }
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            respondError("Failed to approve add request: " . $e->getMessage(), 500);
+        }
     }
 
 
@@ -924,18 +900,6 @@ class API
         try {
             // 5) DELETE from prices
             $sql    = "DELETE FROM prices WHERE productID = ?";
-            $params = [$productID];
-            error_log("SQL: $sql | PARAMS: " . json_encode($params));
-            $this->conn->prepare($sql)->execute($params);
-
-            // 6) DELETE from productsbrand
-            $sql    = "DELETE FROM productsbrand WHERE productID = ?";
-            $params = [$productID];
-            error_log("SQL: $sql | PARAMS: " . json_encode($params));
-            $this->conn->prepare($sql)->execute($params);
-
-            // 7) DELETE from productscategory
-            $sql    = "DELETE FROM productscategory WHERE productID = ?";
             $params = [$productID];
             error_log("SQL: $sql | PARAMS: " . json_encode($params));
             $this->conn->prepare($sql)->execute($params);
@@ -1032,6 +996,8 @@ class API
             $params = [
                 $payload['productName'],
                 $payload['description'],
+                $payload['brandID'],
+                $payload['categoryID'],
                 $payload['imageURL'],
                 $payload['specifications'],
                 $payload['productID']
@@ -1050,32 +1016,6 @@ class API
                 $payload['price'],
                 $payload['productID'],
                 $payload['retailerID']
-            ];
-            error_log("SQL: $sql | PARAMS: " . json_encode($params));
-            $this->conn->prepare($sql)->execute($params);
-
-            // 6c) Update productsbrand
-            $sql    = "
-                UPDATE productsbrand
-                SET brandID   = ?
-                WHERE productID = ?
-            ";
-            $params = [
-                $payload['brandID'],
-                $payload['productID']
-            ];
-            error_log("SQL: $sql | PARAMS: " . json_encode($params));
-            $this->conn->prepare($sql)->execute($params);
-
-            // 6d) Update productscategory
-            $sql    = "
-                UPDATE productscategory
-                SET categoryID= ?
-                WHERE productID = ?
-            ";
-            $params = [
-                $payload['categoryID'],
-                $payload['productID']
             ];
             error_log("SQL: $sql | PARAMS: " . json_encode($params));
             $this->conn->prepare($sql)->execute($params);
