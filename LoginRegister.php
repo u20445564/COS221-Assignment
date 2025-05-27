@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare it - Login/Register</title>
+    <style>
+        @font-face {
+            font-family: 'Porkys';
+            src:url('FONT/CalSans-Regular.ttf');
+        }
+        @font-face {
+            font-family: 'Aileron';
+            src: url('FONT/Aileron-Regular.otf');
+        }
+        :root {
+            --bg-color: #f0dcbd;
+            --text-color: #000;
+            --card-bg: white;
+            --nav-bg: rgb(17, 61, 42);
+            --border-color: #113d2a;
+            --input-bg: white;
+            --shadow-color: rgba(0,0,0,0.1);
+            --price-text-color: #666;
+            --primary-color: #113d2a;
+            --secondary-color: #666;
+            --accent-color: #f8f1e4;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2d2d2d;
+            --nav-bg: #0d2818;
+            --border-color: rgba(255,255,255,0.2);
+            --input-bg: #3a3a3a;
+            --shadow-color: rgba(255,255,255,0.1);
+            --price-text-color: #b0b0b0;
+            --primary-color: #4a9d6f;
+            --secondary-color: #b0b0b0;
+            --accent-color: #2a2a2a;
+        }
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .navbar {
+            background-color: var(--nav-bg);
+            overflow: hidden;
+            padding: 10px 20px;
+            border-radius: 15px;
+            justify-content: space-between;
+            display: flex;
+            animation: slideInFromTop 0.8s ease-out;
+            margin: 20px;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 32px;
+            font-family: "Porkys", sans-serif;
+            align-self: center;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            display: inline-block;
+            font-family: "Porkys", sans-serif;
+            font-size: 25px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-right a:hover {
+            background-color: #507541;
+            border-radius: 15px;
+        }
+
+        /* NEW MAIN CONTENT LAYOUT */
+        .main-content {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 40px;
+            padding: 20px;
+            align-items: flex-start;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 450px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 0 20px var(--shadow-color);
+            overflow: hidden;
+            animation: slideInFromLeft 0.8s ease-out 0.3s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        .tab-header {
+            display: flex;
+            background-color: var(--accent-color);
+        }
+
+        .tab-button {
+            flex: 1;
+            background-color: var(--accent-color);
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 15px;
+            font-size: 18px;
+            font-family: "Porkys", sans-serif;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .tab-button:hover {
+            background-color: var(--bg-color);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background-color: var(--card-bg);
+            border-top: 3px solid var(--nav-bg);
+        }
+
+        .tab-content {
+            padding: 30px;
+            background-color: var(--card-bg);
+        }
+
+        .tab-panel {
+            display: none;
+            animation: slideInFromBottom 0.5s ease-out;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-family: "Porkys", sans-serif;
+            font-size: 28px;
+            font-weight: lighter;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        p {
+            color: var(--secondary-color);
+            font-family: "Porkys", sans-serif;
+            font-size: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-family: "Porkys", sans-serif;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: "Aileron", sans-serif;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            transform: translateX(0);
+        }
+
+        input:focus {
+            border: 2px solid var(--nav-bg);
+            outline: none;
+            box-shadow: 0 0 15px rgba(17, 61, 42, 0.3);
+            transform: scale(1.02);
+        }
+
+        button {
+            background-color: var(--nav-bg);
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-family: "Porkys", sans-serif;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        button:hover {
+            background-color: #507541;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 61, 42, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+            animation: pulse 0.3s ease;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            cursor: pointer;
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-family: "Porkys", sans-serif;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+
+        .divider-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .divider-text {
+            padding: 0 15px;
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+
+        .user-type-selection {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .radio-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-family: "Aileron", sans-serif;
+            color: var(--primary-color);
+        }
+
+        .radio-container input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .secondary-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            margin-top: 10px;
+        }
+        
+        .secondary-btn:hover {
+            background-color: var(--bg-color);
+        }
+
+        .about-section {
+            flex: 1;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 0 20px var(--shadow-color);
+            padding: 40px;
+            text-align: center;
+            animation: slideInFromRight 0.8s ease-out 0.6s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: fit-content;
+        }
+
+        .about-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-color);
+        }
+
+        .about-section h2 {
+            color: var(--primary-color);
+            font-family: "Porkys", sans-serif;
+            font-size: 36px;
+            margin-bottom: 30px;
+            font-weight: lighter;
+        }
+
+        .about-section p {
+            color: var(--secondary-color);
+            font-family: "Aileron", sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .about-section .brand-name {
+            font-family: "Porkys", sans-serif;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .about-section .tagline {
+            font-family: "Porkys", sans-serif;
+            font-size: 20px;
+            color: var(--primary-color);
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-color), var(--accent-color));
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            animation: pulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .about-section .tagline:hover {
+            transform: scale(1.05);
+            animation: none;
+            background: linear-gradient(135deg, var(--accent-color), var(--bg-color));
+        }
+
+        .features-highlight {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background: var(--accent-color);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            opacity: 0;
+            animation: slideInFromLeft 0.6s ease-out forwards;
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.8s; }
+        .feature-item:nth-child(2) { animation-delay: 1s; }
+        .feature-item:nth-child(3) { animation-delay: 1.2s; }
+
+        .feature-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(17, 61, 42, 0.15);
+            border-left-width: 6px;
+        }
+
+        .feature-item h3 {
+            color: var(--primary-color);
+            font-family: "Porkys", sans-serif;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .team-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--accent-color);
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            animation: scaleIn 0.6s ease-out 1.4s both;
+        }
+
+        .team-section h3 {
+            color: var(--primary-color);
+            font-family: "Porkys", sans-serif;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: lighter;
+        }
+
+        .team-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .team-list li {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            font-family: "Aileron", sans-serif;
+            color: var(--secondary-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            transform: translateX(0);
+            opacity: 0;
+            animation: slideInFromLeft 0.5s ease-out forwards;
+        }
+
+        .team-list li:nth-child(1) { animation-delay: 1.6s; }
+        .team-list li:nth-child(2) { animation-delay: 1.7s; }
+        .team-list li:nth-child(3) { animation-delay: 1.8s; }
+        .team-list li:nth-child(4) { animation-delay: 1.9s; }
+        .team-list li:nth-child(5) { animation-delay: 2s; }
+        .team-list li:nth-child(6) { animation-delay: 2.1s; }
+
+        .team-list li:hover {
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            border-left-width: 6px;
+        }
+
+        .team-list li strong {
+            color: var(--primary-color);
+            font-family: "Porkys", sans-serif;
+        }
+
+        /* FOOTER STYLES */
+        footer {
+            background-color: var(--nav-bg);
+            color: white;
+            padding: 30px 20px 20px;
+            margin: 20px;
+            border-radius: 15px;
+            animation: slideInFromBottom 0.8s ease-out 2.2s both;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .footer-left h3 {
+            font-family: "Porkys", sans-serif;
+            font-size: 24px;
+            margin: 0;
+            color: white;
+        }
+
+        .footer-left p {
+            margin: 0;
+            color: #b0b0b0;
+            font-size: 14px;
+            font-family: "Aileron", sans-serif;
+            text-align: left;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle label {
+            font-family: "Porkys", sans-serif;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background-color: #507541;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+        }
+
+        .toggle-switch.active {
+            background-color: #28805a;
+        }
+
+        .toggle-slider {
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(28px);
+        }
+
+        .copyright {
+            border-top: 1px solid #507541;
+            padding-top: 15px;
+            text-align: center;
+        }
+
+        .copyright p {
+            margin: 0;
+            color: #b0b0b0;
+            font-size: 12px;
+            font-family: "Aileron", sans-serif;
+        }
+
+        /* RESPONSIVE STYLES */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .container,
+            .about-section {
+                max-width: 800px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 10px;
+                gap: 20px;
+            }
+            
+            .container,
+            .about-section {
+                margin: 0;
+                padding: 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .theme-toggle {
+                justify-content: center;
+            }
+
+            .footer-left {
+                text-align: center;
+            }
+
+            .navbar {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            footer {
+                margin: 10px;
+                padding: 20px 15px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            COMPARE IT!
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="tab-header">
+                <button class="tab-button active" onclick="openTab(event, 'login')">Login</button>
+                <button class="tab-button" onclick="openTab(event, 'register')">Register</button>
+            </div>
+
+            <div class="tab-content">
+                <div id="login" class="tab-panel active">
+                    <h2>Welcome Back!</h2>
+                    <p>Login to find the best grocery deals</p>
+                    
+                    <form id="login-form" action="login.php" method="post">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="login-password" name="password" required>
+                                <span class="toggle-password" onclick="togglePassword('login-password')">Show</span>
+                            </div>
+                            <div class="forgot-password">
+                                <a href="#" onclick="showForgotPasswordForm()">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+
+                <div id="register" class="tab-panel">
+                    <h2>Create Account</h2>
+                    <p>Start saving on your grocery shopping</p>
+                    
+                    <form id="register-form" action="register.php" method="post">
+                        <div class="form-group">
+                            <label>User Type</label>
+                            <div class="user-type-selection">
+                                <label class="radio-container">
+                                    <input type="radio" name="user_type" value="user" checked onchange="toggleUserTypeFields()">
+                                    <span class="radio-label">User</span>
+                                </label>
+                                <label class="radio-container">
+                                    <input type="radio" name="user_type" value="retailer" onchange="toggleUserTypeFields()">
+                                    <span class="radio-label">Retailer</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="customer-fields">
+                            <div class="form-group">
+                                <label for="customer-name">Name</label>
+                                <input type="text" id="customer-name" name="customer_name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-surname">Surname</label>
+                                <input type="text" id="customer-surname" name="customer_surname" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-username">Username</label>
+                                <input type="text" id="customer-username" name="customer_username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer-phone">Phone Number</label>
+                                <input type="text" id="customer-phone" name="customer_phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer-email">Email</label>
+                                <input type="email" id="customer-email" name="customer_email" required>
+                            </div>
+                        </div>
+                        
+                        <div id="retailer-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="retailer-name">Retailer Name</label>
+                                <input type="text" id="retailer-name" name="retailer_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="Verifiednumber">Verified Retailer number</label>
+                                <input type="text" id="Verifiednumber" name="retailer-registrationnumber">
+                            </div>
+                            <div class="form-group">
+                                <label for="retailer-email">Email</label>
+                                <input type="email" id="retailer-email" name="retailer_email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="retailer-phone">Phone Number</label>
+                                <input type="text" id="retailer-phone" name="retailer_phone">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="register-password" name="password" required>
+                                <span class="toggle-password" onclick="togglePassword('register-password')">Show</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-confirm">Confirm Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="register-confirm" name="confirm_password" required>
+                                <span class="toggle-password" onclick="togglePassword('register-confirm')">Show</span>
+                            </div>
+                        </div>
+
+                        <button type="submit">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>About Us</h2>
+            
+            <p>Welcome to <span class="brand-name">Compare It!</span> – your smart shopping companion. Launched in 2025, <span class="brand-name">Compare It!</span> was founded by six passionate individuals with one goal in mind: to make shopping easier, faster, and more affordable.</p>
+            
+            <div class="features-highlight">
+                <div class="feature-item">
+                    <h3>Real-Time Comparison</h3>
+                    <p>Compare prices from multiple registered stores instantly</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Best Deals</h3>
+                    <p>Find the best deals at a glance across all categories</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Smart Shopping</h3>
+                    <p>Make informed choices and save money effortlessly</p>
+                </div>
+            </div>
+            
+            <p>Our app lets users compare prices from multiple registered stores in real time, helping you find the best deals at a glance. Whether you're shopping for groceries, gadgets, or everyday essentials, <span class="brand-name">Compare It!</span> empowers you to make informed choices and save money — all in one simple, convenient app.</p>
+            
+            <div class="team-section">
+                <h3>Meet Our Founding Team</h3>
+                <p><span class="brand-name">Compare It!</span> was brought to life by six dedicated individuals:</p>
+                <ul class="team-list">
+                    <li><strong>Jessica M.</strong> - Frontend Development</li>
+                    <li><strong>Blessing G.</strong> - Frontend Development & Integration (working closely with Hayley)</li>
+                    <li><strong>Divo K.</strong> - Backend Development</li>
+                    <li><strong>Tshegofatso M.</strong> - Backend Development</li>
+                    <li><strong>Nomzi P.</strong> - Full-Stack Development (Frontend & Backend)</li>
+                    <li><strong>Hayley B.</strong> - Integration Specialist</li>
+                </ul>
+                <p>Together, our diverse team combines expertise in frontend design, backend architecture, and seamless integration to deliver the best possible shopping comparison experience.</p>
+            </div>
+            
+            <div class="tagline">
+                Start comparing. Start saving. Only with <span class="brand-name">Compare It!</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <h3>Compare It!</h3>
+                <p>Your trusted price comparison platform</p>
+                <p>Compare prices across major South African retailers</p>
+            </div>
+            
+            <div class="theme-toggle">
+                <label for="themeToggle">🌙 Dark Mode</label>
+                <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()">
+                    <div class="toggle-slider">☀️</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2025 Compare It! All rights reserved. | Helping you find the best deals.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme state stored in memory instead of localStorage
+        let isDarkMode = false;
+
+        function openTab(event, tabName) {
+            var tabPanels = document.getElementsByClassName("tab-panel");
+            for (var i = 0; i < tabPanels.length; i++) {
+                tabPanels[i].classList.remove("active");
+            }
+            
+            var tabButtons = document.getElementsByClassName("tab-button");
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function toggleUserTypeFields() {
+            var userType = document.querySelector('input[name="user_type"]:checked').value;
+            var customerFields = document.getElementById('customer-fields');
+            var retailerFields = document.getElementById('retailer-fields');
+            
+            if (userType === 'customer') {
+                customerFields.style.display = 'block';
+                retailerFields.style.display = 'none';
+
+                // Set required attributes for customer fields
+                var customerInputs = customerFields.querySelectorAll('input');
+                for (var i = 0; i < customerInputs.length; i++) {
+                    customerInputs[i].required = true;
+                }
+                
+                // Remove required attributes from retailer fields
+                var retailerInputs = retailerFields.querySelectorAll('input');
+                for (var i = 0; i < retailerInputs.length; i++) {
+                    retailerInputs[i].required = false;
+                }
+            } else {
+                customerFields.style.display = 'none';
+                retailerFields.style.display = 'block';
+                
+                // Set required attributes for retailer fields
+                var retailerInputs = retailerFields.querySelectorAll('input');
+                for (var i = 0; i < retailerInputs.length; i++) {
+                    retailerInputs[i].required = true;
+                }
+                
+                // Remove required attributes from customer fields
+                var customerInputs = customerFields.querySelectorAll('input');
+                for (var i = 0; i < customerInputs.length; i++) {
+                    customerInputs[i].required = false;
+                }
+            }
+        }
+
+        function togglePassword(inputId) {
+            var passwordInput = document.getElementById(inputId);
+            var toggleButton = passwordInput.nextElementSibling;
+            
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleButton.textContent = "Hide";
+            } else {
+                passwordInput.type = "password";
+                toggleButton.textContent = "Show";
+            }
+        }
+
+        function toggleTheme() {
+            var body = document.body;
+            var toggleSwitch = document.getElementById('themeToggle');
+            var toggleSlider = toggleSwitch.querySelector('.toggle-slider');
+            var themeLabel = document.querySelector('.theme-toggle label');
+            
+            isDarkMode = !isDarkMode;
+            
+            if (isDarkMode) {
+                body.setAttribute('data-theme', 'dark');
+                toggleSwitch.classList.add('active');
+                toggleSlider.textContent = '🌙';
+                themeLabel.textContent = '☀️ Light Mode';
+            } else {
+                body.removeAttribute('data-theme');
+                toggleSwitch.classList.remove('active');
+                toggleSlider.textContent = '☀️';
+                themeLabel.textContent = '🌙 Dark Mode';
+            }
+        }
+
+        function showForgotPasswordForm() {
+            alert('Forgot password functionality would be implemented here. Please contact support for password reset.');
+        }
+
+        // Form validation
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            var email = document.getElementById('login-email').value;
+            var password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            
+            // Basic email validation
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                alert('Please enter a valid email address.');
+                return false;
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            var password = document.getElementById('register-password').value;
+            var confirmPassword = document.getElementById('register-confirm').value;
+            var userType = document.querySelector('input[name="user_type"]:checked').value;
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match. Please try again.');
+                return false;
+            }
+            
+            // Password strength validation
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long.');
+                return false;
+            }
+            
+            // Validate required fields based on user type
+            if (userType === 'customer') {
+                var requiredFields = ['customer-name', 'customer-surname', 'customer-username', 'customer-phone', 'customer-email'];
+                for (var i = 0; i < requiredFields.length; i++) {
+                    var field = document.getElementById(requiredFields[i]);
+                    if (!field.value.trim()) {
+                        e.preventDefault();
+                        alert('Please fill in all required fields.');
+                        return false;
+                    }
+                }
+                
+                // Email validation for customer
+                var email = document.getElementById('customer-email').value;
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address.');
+                    return false;
+                }
+            } else {
+                var requiredFields = ['retailer-name', 'Verifiednumber', 'retailer-email', 'retailer-phone'];
+                for (var i = 0; i < requiredFields.length; i++) {
+                    var field = document.getElementById(requiredFields[i]);
+                    if (!field.value.trim()) {
+                        e.preventDefault();
+                        alert('Please fill in all required fields.');
+                        return false;
+                    }
+                }
+                
+                // Email validation for retailer
+                var email = document.getElementById('retailer-email').value;
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address.');
+                    return false;
+                }
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial theme
+            toggleUserTypeFields();
+            
+            // Add smooth scrolling for better UX
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Add hover effects for better interactivity
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(-2px)';
+                }
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Enhanced form interactions
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
