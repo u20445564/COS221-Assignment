@@ -2,9 +2,9 @@
 // config.php
 
 $host = 'localhost';
-$db = 'binarybandits';
+$db = 'compareit_binarybandits';
 $username = 'root';
-$password = 'Toilet@28';
+$password = 'dB*23_meTsh3g0';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
