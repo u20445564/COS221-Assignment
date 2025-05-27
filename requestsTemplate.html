@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
     <title>
         Request Page
     </title>
@@ -12,36 +13,66 @@
                 font-family: 'Aileron';
                 src: url('FONT/Aileron-Regular.otf');
             }
+            
+            /* Light mode variables */
+            :root[data-theme="light"] {
+                --bg-color: #f0dcbd;
+                --navbar-bg: rgb(17, 61, 42);
+                --text-primary: rgb(17, 61, 42);
+                --text-white: white;
+                --request-bg: white;
+                --border-color: #eee;
+                --date-color: #777;
+                --button-orange: #da754d;
+                --button-green: #507541;
+                --button-red: #ff4444;
+            }
+            
+            /* Dark mode variables */
+            :root[data-theme="dark"] {
+                --bg-color: #1a1a1a;
+                --navbar-bg: #2d2d2d;
+                --text-primary: #e0e0e0;
+                --text-white: #f0f0f0;
+                --request-bg: #333333;
+                --border-color: #555;
+                --date-color: #aaa;
+                --button-orange: #e8854f;
+                --button-green: #5a8549;
+                --button-red: #ff5555;
+            }
+            
             .navbar {
-                background-color: rgb(17, 61, 42);
+                background-color: var(--navbar-bg);
                 overflow: hidden;
                 padding: 10px 10px;
                 border-radius: 15px;
                 justify-content: space-between;
                 display: flex;
-                
+                transition: background-color 0.3s ease;
             }
             .nav-right a {
-                color: white;
+                color: var(--text-white);
                 text-decoration: none;
                 padding: 14px 20px;
                 display: inline-block;
                 font-family: "Porkys", sans-serif;
                 font-size: 25px;
+                transition: background-color 0.3s ease;
             }
             .nav-right a:hover {
-                background-color: #507541;
+                background-color: var(--button-green);
                 border-radius: 15px;
-                
             }
 
             body{
-                background-color: #f0dcbd;
+                background-color: var(--bg-color);
                 margin: 20px;
+                transition: background-color 0.3s ease;
             }
 
             .text{
-                color: white;
+                color: var(--text-white);
                 font-size: 45px;
                 align-content: center;
                 font-family: "Porkys", sans-serif; 
@@ -60,7 +91,7 @@
                 width: 200px;
                 height: 40px;
                 margin-inline: 5px;
-                background-color: #da754d;
+                background-color: var(--button-orange);
                 font-family: 'Porkys', sans-serif;
                 border-radius: 15px;
                 font-size: 16px;
@@ -76,10 +107,11 @@
             }
 
             p{
-                color: rgb(17, 61, 42);
+                color: var(--text-primary);
                 font-family: "Porkys", sans-serif;
                 font-size: 40px;
                 font-weight: lighter;
+                transition: color 0.3s ease;
             }
             
             .requests {
@@ -93,12 +125,12 @@
                 justify-content: space-between;
                 align-items: flex-start;
                 padding: 15px;
-                border-bottom: 1px solid #eee;
+                border-bottom: 1px solid var(--border-color);
                 font-family: 'Porkys', sans-serif;
-                
                 border-radius: 10px;
-                background-color: white;
+                background-color: var(--request-bg);
                 margin-bottom: 10px;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
             }
             
             .request-info {
@@ -112,36 +144,40 @@
             .request-number {
                 font-size: 20px;
                 font-weight: bold;
-                color: rgb(17, 61, 42);
+                color: var(--text-primary);
                 margin-bottom: 10px;
                 font-family: 'Porkys', sans-serif;
                 font-weight: lighter;
+                transition: color 0.3s ease;
             }
             
             .request-date {
                 font-size: 14px;
-                color: #777;
+                color: var(--date-color);
                 font-family: 'Porkys', sans-serif;
                 margin-bottom: 8px;
+                transition: color 0.3s ease;
             }
 
             .request-description {
                 font-size: 16px;
-                color: rgb(17, 61, 42);
+                color: var(--text-primary);
                 font-family: 'Porkys', sans-serif;
                 font-weight: lighter;
                 margin-bottom: 8px;
                 line-height: 1.4;
+                transition: color 0.3s ease;
             }
 
             .request-type {
                 font-size: 14px;
-                color: #da754d;
+                color: var(--button-orange);
                 font-family: 'Porkys', sans-serif;
                 font-weight: bold;
                 margin-bottom: 5px;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
+                transition: color 0.3s ease;
             }
             
             .request-status {
@@ -158,7 +194,6 @@
                 margin-right: 15px;
                 font-size: 14px;
                 font-family: 'Porkys', sans-serif;
-
             }
             
             .pending {
@@ -201,19 +236,19 @@
             }
             
             .view-btn {
-                background-color: #507541;
+                background-color: var(--button-green);
                 font-family: 'Porkys', sans-serif;
                 color: white;
             }
             
             .edit-btn {
-                background-color: #da754d;
+                background-color: var(--button-orange);
                 color: white;                
                 font-family: 'Porkys', sans-serif;
             }
             
             .delete-btn {
-                background-color: #ff4444;
+                background-color: var(--button-red);
                 color: white;
                 font-family: 'Porkys', sans-serif;
             }
@@ -222,6 +257,119 @@
                 opacity: 0.8;
             }
 
+            /* Theme toggle styles */
+            footer {
+                background-color: var(--navbar-bg);
+                color: var(--text-white);
+                padding: 40px 20px 20px;
+                margin-top: 50px;
+                border-radius: 15px;
+                transition: background-color 0.3s ease;
+            }
+
+            .footer-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                max-width: 1200px;
+                margin: 0 auto;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .footer-left h3 {
+                font-family: 'Porkys', sans-serif;
+                font-size: 28px;
+                margin: 0 0 10px 0;
+                color: var(--text-white);
+            }
+
+            .footer-left p {
+                font-family: 'Porkys', sans-serif;
+                font-size: 16px;
+                margin: 5px 0;
+                color: var(--text-white);
+                opacity: 0.9;
+            }
+
+            .copyright {
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .copyright p {
+                font-family: 'Porkys', sans-serif;
+                font-size: 14px;
+                color: var(--text-white);
+                opacity: 0.8;
+                margin: 0;
+            }
+
+            .theme-toggle {
+                position: static;
+                top: auto;
+                right: auto;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background-color: rgba(255, 255, 255, 0.1);
+                padding: 10px 15px;
+                border-radius: 25px;
+                box-shadow: none;
+                transition: background-color 0.3s ease;
+                z-index: 1000;
+            }
+
+            .theme-toggle label {
+                color: var(--text-white);
+                font-family: 'Porkys', sans-serif;
+                font-size: 14px;
+                transition: color 0.3s ease;
+            }
+
+            .toggle-switch {
+                width: 50px;
+                height: 25px;
+                background-color: #ccc;
+                border-radius: 25px;
+                position: relative;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .toggle-switch.active {
+                background-color: var(--button-green);
+            }
+
+            .toggle-slider {
+                width: 21px;
+                height: 21px;
+                background-color: white;
+                border-radius: 50%;
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                transition: transform 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+            }
+
+            .toggle-switch.active .toggle-slider {
+                transform: translateX(25px);
+            }
+
+            /* Dark mode specific adjustments */
+            [data-theme="dark"] footer {
+                background-color: #2d2d2d;
+            }
+
+            [data-theme="dark"] .theme-toggle {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
         </style>
     </head>
     <body>
@@ -237,7 +385,6 @@
         </div>
 
         <div class="search-container">
-            
             <p>Past Requests</p>
             <button type="button" class="add">Create New Request!</button>
         </div>
@@ -343,9 +490,85 @@
                         <button class="delete-btn">Delete</button>
                     </div>
                 </div>
-            </div>
+            </div> 
+ <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <h3>Compare It!</h3>
+        <p>Your trusted price comparison platform</p>
+        <p>Compare prices across major South African retailers</p>
+      </div>
+      
+      <div class="theme-toggle">
+        <label for="themeToggle">🌙 Dark Mode</label>
+        <div class="toggle-switch active" id="themeToggle">
+          <div class="toggle-slider">🌙</div>
         </div>
-        
-    </body>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      <p>© 2025 Compare It! All rights reserved. | Helping you find the best deals.</p>
+    </div>
+  </footer>
 
+
+        <script>
+            function initializeTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const slider = themeToggle?.querySelector('.toggle-slider');
+                
+                if (!themeToggle || !slider) return;
+                
+                const savedTheme = getThemePreference() || 'light';
+                
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.classList.add('active');
+                    slider.textContent = '🌙';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    themeToggle.classList.remove('active');
+                    slider.textContent = '☀️';
+                }
+            }
+
+            function getThemePreference() {
+                return 'light';
+            }
+
+            function setThemePreference(theme) {
+                window.currentTheme = theme;
+            }
+
+            function toggleTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const slider = themeToggle?.querySelector('.toggle-slider');
+                
+                if (!themeToggle || !slider) return;
+                
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                
+                if (currentTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    setThemePreference('light');
+                    themeToggle.classList.remove('active');
+                    slider.textContent = '☀️';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    setThemePreference('dark');
+                    themeToggle.classList.add('active');
+                    slider.textContent = '🌙';
+                }
+            }
+
+            // Add event listener and initialize
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Initialize theme on load
+            window.addEventListener('DOMContentLoaded', () => {
+                initializeTheme();
+            });
+        </script>
+    </body>
 </html>
